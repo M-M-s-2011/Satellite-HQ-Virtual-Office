@@ -12,7 +12,7 @@ export default class MainScene extends Phaser.Scene {
     const scene = this;
 
     //background
-    this.add.image(400, 300, "officePlan").setOrigin(0);
+    this.add.image(0, 0, "officePlan").setOrigin(0);
 
     //
     // this.socket = io();
