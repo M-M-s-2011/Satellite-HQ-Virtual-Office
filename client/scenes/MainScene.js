@@ -41,6 +41,7 @@ export default class MainScene extends Phaser.Scene {
   }
   update() {
     const scene = this;
+    console.log("I'm just visiting!");
 
     //sprite mechanics for movement
     if (this.sprite) {
