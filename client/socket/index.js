@@ -1,2 +1,8 @@
-import connectGameRoutes from "./game";
+import connectGame from "./game";
 import connectVideoRoutes from "./video";
+
+const connect = (scene) => {
+  connectGame(scene);
+};
+
+export default connect;
