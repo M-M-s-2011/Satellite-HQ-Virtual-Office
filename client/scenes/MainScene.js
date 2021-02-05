@@ -14,12 +14,12 @@ export default class MainScene extends Phaser.Scene {
   create() {
     const scene = this;
 
+    this.socket = io();
+
     //background
     this.add.image(400, 300, "officePlan");
     // const banner = this.add.image(400, 50, "banner");
     // banner.setScale(0.4);
-
-    // this.socket = io();
 
     //ADD SPRITE with world bounds
     this.sprite = scene.physics.add
