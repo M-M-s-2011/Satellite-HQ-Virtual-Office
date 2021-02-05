@@ -24,7 +24,7 @@ export default class MainScene extends Phaser.Scene {
     //ADD SPRITE with world bounds
     this.sprite = scene.physics.add
       .sprite(300, 200, "sprite")
-      .setSize(30, 40)
+      // .setScale(0.3)
       .setVisible(true)
       .setVelocity(400, 300)
       .setCollideWorldBounds(true);
