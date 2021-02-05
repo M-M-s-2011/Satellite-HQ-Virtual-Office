@@ -8,10 +8,7 @@ export default class MainScene extends Phaser.Scene {
   preload() {
     this.load.image("officePlan", "assets/backgrounds/officePlan.png");
     // this.load.image("banner", "assets/backgrounds/banner.png");
-    this.load.spritesheet("sprite", "assets/spritesheets/sprite.png", {
-      frameWidth: 29,
-      frameHeight: 37,
-    });
+    this.load.image("sprite", "assets/spritesheets/sprite.png");
   }
 
   create() {
