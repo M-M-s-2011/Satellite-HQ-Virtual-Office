@@ -50,6 +50,9 @@ const disconnected = (scene, arg) => {
   scene.otherPlayers.getChildren().forEach((otherPlayer) => {
     if (playerId === otherPlayer.playerId) {
       otherPlayer.destroy();
+      // If the player that disconnected was a neighbor of our sprite,
+      // delete it from the nearbyPlayers object
+      delete scene.nearbyPlayers[playerId];
     }
   });
 };

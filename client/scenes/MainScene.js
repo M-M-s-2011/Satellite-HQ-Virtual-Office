@@ -1,17 +1,20 @@
-import "phaser";
-import connect from "../socket";
+import 'phaser';
+import connect from '../socket';
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
-    super("MainScene");
+    super('MainScene');
     this.state = {};
+    // Store ids of players overlapping with our sprite
+    // Should we move this to a property of scene.state?
+    this.nearbyPlayers = {};
   }
   preload() {
-    this.load.image("officePlan", "assets/backgrounds/officePlan.png");
-    this.load.image("banner", "assets/backgrounds/banner.png");
-    this.load.image("sprite", "assets/spritesheets/sprite.png");
-    this.load.image("bear", "assets/spritesheets/sprite2.png");
-    this.load.image("star", "assets/spritesheets/star.png");
+    this.load.image('officePlan', 'assets/backgrounds/officePlan.png');
+    this.load.image('banner', 'assets/backgrounds/banner.png');
+    this.load.image('sprite', 'assets/spritesheets/sprite.png');
+    this.load.image('bear', 'assets/spritesheets/sprite2.png');
+    this.load.image('star', 'assets/spritesheets/star.png');
   }
 
   create() {
@@ -22,20 +25,14 @@ export default class MainScene extends Phaser.Scene {
     connect(scene);
 
     //background
-    this.add.image(400, 300, "officePlan");
-    const banner = this.add.image(400, 50, "banner");
+    this.add.image(400, 300, 'officePlan');
+    const banner = this.add.image(400, 50, 'banner');
     banner.setScale(0.4);
     // CREATE OTHER PLAYERS GROUP
     this.otherPlayers = this.physics.add.group();
 
-    this.bears = this.physics.add.group({
-      key: "bear",
-      repeat: 3,
-      setXY: { x: 100, y: 300, stepX: 70 },
-    });
-
     // Join the game room with roomKey 'office'
-    this.socket.emit("joinRoom", "office");
+    this.socket.emit('joinRoom', 'office');
 
     //set movement keys to arrow keys
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -76,7 +73,7 @@ export default class MainScene extends Phaser.Scene {
         (x !== this.sprite.oldPosition.x || y !== this.sprite.oldPosition.y)
       ) {
         this.moving = true;
-        this.socket.emit("playerMovement", {
+        this.socket.emit('playerMovement', {
           x: this.sprite.x,
           y: this.sprite.y,
           roomKey: scene.state.roomKey,
@@ -88,20 +85,14 @@ export default class MainScene extends Phaser.Scene {
         y: this.sprite.y,
         rotation: this.sprite.rotation,
       };
-      //overlap
       //iterates over children and add overlap
       //look into otherPlayers.children.iterate()
-      for (let otherPlayer of this.otherPlayers.children.entries) {
-        otherPlayer.collider = this.physics.add.overlap(
-          otherPlayer,
-          this.sprite,
-          function (otherPlayer, sprite) {
-            console.log("otherPlayers & sprites");
-          },
-          null,
-          this
-        );
-      }
+      this.otherPlayers.children.iterate((otherPlayer) =>
+        scene.addPlayerOverlap(scene, otherPlayer)
+      );
+      // check the otherPlayers we were previously overlapping with
+      // remove any where that's no longer the case
+      this.checkOverlap(scene);
     }
   }
 
@@ -109,24 +100,57 @@ export default class MainScene extends Phaser.Scene {
   addPlayer(scene, playerInfo) {
     scene.joined = true;
     scene.sprite = scene.physics.add
-      .sprite(playerInfo.x, playerInfo.y, "sprite")
+      .sprite(playerInfo.x, playerInfo.y, 'sprite')
       .setScale(0.7)
-      .setCircle(35)
       .setVisible(true)
       .setCollideWorldBounds(true);
+    scene.sprite.playerId = playerInfo.playerId;
   }
   addOtherPlayers(scene, playerInfo) {
     const otherPlayer = scene.physics.add
-      .sprite(playerInfo.x + 40, playerInfo.y + 40, "star")
+      .sprite(playerInfo.x + 40, playerInfo.y + 40, 'star')
       .setScale(0.7)
-      .setCircle(35)
       .setVisible(true)
       .setCollideWorldBounds(true);
     otherPlayer.playerId = playerInfo.playerId;
     scene.otherPlayers.add(otherPlayer);
   }
+  // Add overlap for a pair of players
+  addPlayerOverlap(scene, otherPlayer) {
+    if (!otherPlayer.collider) {
+      otherPlayer.collider = scene.physics.add.overlap(
+        scene.sprite,
+        otherPlayer,
+        scene.playerOverlap,
+        null,
+        this
+      );
+    }
+  }
   //callback for overlap
   playerOverlap(player, otherPlayer) {
-    console.log("player Overlap:", player.playerId, otherPlayer.playerId);
+    // this.nearbyPlayers stores the playerIds of other players
+    // when overlapping
+    if (!this.nearbyPlayers[otherPlayer.playerId]) {
+      // code inside this block runs only the first time overlap is triggered betwen player and otherPlayer
+      console.log('player Overlap:', player.playerId, otherPlayer.playerId);
+      this.nearbyPlayers[otherPlayer.playerId] = otherPlayer;
+    }
+  }
+  // Check whether there are any nearbyPlayers that we're no longer overlapping with
+  checkOverlap(scene) {
+    const spriteBounds = scene.sprite.getBounds();
+    Object.keys(scene.nearbyPlayers).forEach((playerId) => {
+      const otherPlayer = scene.nearbyPlayers[playerId];
+      const otherPlayerBounds = otherPlayer.getBounds();
+      if (
+        !Phaser.Geom.Intersects.RectangleToRectangle(
+          spriteBounds,
+          otherPlayerBounds
+        )
+      ) {
+        delete this.nearbyPlayers[playerId];
+      }
+    });
   }
 }
