@@ -43,15 +43,26 @@ const playerMoved = (scene, playerInfo) => {
     }
   });
 };
+//disconnected
+const disconnected = (scene, arg) => {
+  const { playerId, numPlayers } = arg;
+  scene.state.numPlayers = numPlayers;
+  scene.otherPlayers.getChildren().forEach((otherPlayer) => {
+    if (playerId === otherPlayer.playerId) {
+      otherPlayer.destroy();
+    }
+  });
+};
 
 const connectGame = (scene) => {
   //when a socket emits "setState", it sets the state in the payload of the socket emission
-  scene.socket.on("setState", (state) => setState(scene, state));
-  scene.socket.on("currentPlayers", (arg) => currentPlayers(scene, arg));
-  scene.socket.on("newPlayer", (arg) => newPlayer(scene, arg));
-  scene.socket.on("playerMoved", (playerInfo) =>
+  scene.socket.on('setState', (state) => setState(scene, state));
+  scene.socket.on('currentPlayers', (arg) => currentPlayers(scene, arg));
+  scene.socket.on('newPlayer', (arg) => newPlayer(scene, arg));
+  scene.socket.on('playerMoved', (playerInfo) =>
     playerMoved(scene, playerInfo)
   );
+  scene.socket.on('disconnected', (arg) => disconnected(scene, arg));
 };
 
 export default connectGame;
