@@ -50,8 +50,9 @@ const startListening = () => {
   const server = app.listen(PORT, () =>
     console.log(`Mixing it up on port ${PORT}`)
   );
-  //   const io = socketio(server);
-  //   require("./socket")(io);
+  const io = socketio(server);
+  //connect backend socket listeners for multiplayer connection
+  require("./socket")(io);
 };
 
 async function bootApp() {

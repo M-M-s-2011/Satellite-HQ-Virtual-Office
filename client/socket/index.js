@@ -1,18 +1,8 @@
-//connect front end event listeners to Socket
-import connectVideo from './video';
-import connectGame from './Game';
+import connectGame from "./game";
+import connectVideoRoutes from "./video";
 
-const gameRooms = {
-	office: {
-		// users: [],
-		players: {},
-		numPlayers: 0,
-	},
-};
-
-const connect = (io) => {
-	connectVideo(io);
-	connectGame(io, gameRooms);
+const connect = (scene) => {
+  connectGame(scene);
 };
 
 export default connect;

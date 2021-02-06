@@ -1,4 +1,5 @@
 import "phaser";
+import connect from "../socket";
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -7,20 +8,25 @@ export default class MainScene extends Phaser.Scene {
   }
   preload() {
     this.load.image("officePlan", "assets/backgrounds/officePlan.png");
-    // this.load.image("banner", "assets/backgrounds/banner.png");
+    this.load.image("banner", "assets/backgrounds/banner.png");
     this.load.image("sprite", "assets/spritesheets/sprite.png");
+    this.load.image("bear", "assets/spritesheets/sprite2.png");
   }
 
   create() {
     const scene = this;
 
+    this.socket = io();
+    //connect front-end socket listeners
+    connect(scene);
+
     //background
     this.add.image(400, 300, "officePlan");
-    // const banner = this.add.image(400, 50, "banner");
-    // banner.setScale(0.4);
+    const banner = this.add.image(400, 50, "banner");
+    banner.setScale(0.4);
 
-    // this.socket = io();
-
+    // CREATE OTHER PLAYERS GROUP
+    this.otherPlayers = this.physics.add.group();
     //ADD SPRITE with world bounds
     this.sprite = scene.physics.add
       .sprite(300, 200, "sprite")
@@ -51,7 +57,6 @@ export default class MainScene extends Phaser.Scene {
       } else if (this.cursors.right.isDown) {
         this.sprite.body.setVelocityX(speed);
       }
-
       // Vertical movement
       if (this.cursors.up.isDown) {
         this.sprite.body.setVelocityY(-speed);
@@ -61,6 +66,45 @@ export default class MainScene extends Phaser.Scene {
 
       // Normalize and scale the velocity so that sprite can't move faster along a diagonal
       this.sprite.body.velocity.normalize().scale(speed);
+
+      // emit player movement
+      let x = this.sprite.x;
+      let y = this.sprite.y;
+      if (
+        this.sprite.oldPosition &&
+        (x !== this.sprite.oldPosition.x || y !== this.sprite.oldPosition.y)
+      ) {
+        this.moving = true;
+        this.socket.emit("playerMovement", {
+          x: this.sprite.x,
+          y: this.sprite.y,
+          roomKey: scene.state.roomKey,
+        });
+      }
+      // save old position data
+      this.sprite.oldPosition = {
+        x: this.sprite.x,
+        y: this.sprite.y,
+        rotation: this.sprite.rotation,
+      };
     }
+  }
+  //need to change sprite location to dynamic
+  addPlayer(scene, playerInfo) {
+    scene.joined = true;
+    scene.sprite = scene.physics.add
+      .sprite(playerInfo.x, playerInfo.y, "sprite")
+      .setScale(0.7)
+      .setVisible(true)
+      .setCollideWorldBounds(true);
+  }
+  addOtherPlayers(scene, playerInfo) {
+    const otherPlayer = scene.add
+      .sprite(playerInfo.x + 40, playerInfo.y + 40, "sprite")
+      .setScale(0.7)
+      .setVisible(true)
+      .setCollideWorldBounds(true);
+    otherPlayer.playerId = playerInfo.playerId;
+    scene.otherPlayers.add(otherPlayer);
   }
 }
