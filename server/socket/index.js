@@ -1,4 +1,5 @@
 //Place to call all the socket functions
+const connectChatRoutes = require('./chat');
 const connectVideoRoutes = require('./video');
 const connectGameRoutes = require('./game');
 
@@ -11,6 +12,7 @@ const gameRooms = {
 };
 
 const connect = (io) => {
+  connectChatRoutes(io);
   connectVideoRoutes(io);
   connectGameRoutes(io, gameRooms);
 };
