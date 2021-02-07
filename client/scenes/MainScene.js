@@ -10,8 +10,7 @@ export default class MainScene extends Phaser.Scene {
     this.nearbyPlayers = {};
   }
   preload() {
-    this.load.image("officePlan", "assets/backgrounds/officePlan.png");
-    this.load.image("banner", "assets/backgrounds/banner.png");
+    this.load.image("background", "assets/backgrounds/banner-background.png");
     this.load.image("sprite", "assets/spritesheets/sprite.png");
     this.load.image("bear", "assets/spritesheets/sprite2.png");
     this.load.image("star", "assets/spritesheets/star.png");
@@ -25,8 +24,7 @@ export default class MainScene extends Phaser.Scene {
     connect(scene);
 
     //background
-    const background = this.add.image(350, 350, "officePlan");
-    // const banner = this.add.image(400, 50, 'banner');
+    const background = this.add.image(350, 323, "background");
     background.height = game.height;
     background.width = game.width;
 
@@ -36,9 +34,7 @@ export default class MainScene extends Phaser.Scene {
     // Join the game room with roomKey 'office'
     this.socket.emit("joinRoom", "office");
     //background
-    this.add.image(400, 300, "officePlan");
-    const banner = this.add.image(400, 50, "banner");
-    banner.setScale(0.4);
+
     // CREATE OTHER PLAYERS GROUP
     this.otherPlayers = this.physics.add.group();
 
@@ -47,7 +43,7 @@ export default class MainScene extends Phaser.Scene {
 
     //set physics and bounds on the game world
     this.physics.world.enable(this);
-    this.physics.world.setBounds(0, 0, 800, 600);
+    this.physics.world.setBounds(0, 0, 700, 600);
   }
   update() {
     const scene = this;
