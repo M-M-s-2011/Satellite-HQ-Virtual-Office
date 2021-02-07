@@ -1,16 +1,16 @@
-import 'phaser';
-import connect from '../socket';
+import "phaser";
+import connect from "../socket";
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
-    super('MainScene');
+    super("MainScene");
     this.state = {};
   }
   preload() {
-    this.load.image('officePlan', 'assets/backgrounds/officePlan.png');
-    this.load.image('banner', 'assets/backgrounds/banner.png');
-    this.load.image('sprite', 'assets/spritesheets/sprite.png');
-    this.load.image('bear', 'assets/spritesheets/sprite2.png');
+    this.load.image("officePlan", "assets/backgrounds/banner-background.png");
+    // this.load.image('banner', 'assets/backgrounds/banner.png');
+    this.load.image("sprite", "assets/spritesheets/sprite.png");
+    this.load.image("bear", "assets/spritesheets/sprite2.png");
   }
 
   create() {
@@ -21,15 +21,15 @@ export default class MainScene extends Phaser.Scene {
     connect(scene);
 
     //background
-    this.add.image(400, 300, 'officePlan');
-    const banner = this.add.image(400, 50, 'banner');
-    banner.setScale(0.4);
+    const background = this.add.image(350, 350, "officePlan");
+    // const banner = this.add.image(400, 50, 'banner');
+    background.setScale(1.1);
 
     // CREATE OTHER PLAYERS GROUP
     this.otherPlayers = this.physics.add.group();
 
     // Join the game room with roomKey 'office'
-    this.socket.emit('joinRoom', 'office');
+    this.socket.emit("joinRoom", "office");
 
     //set movement keys to arrow keys
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -71,7 +71,7 @@ export default class MainScene extends Phaser.Scene {
         (x !== this.sprite.oldPosition.x || y !== this.sprite.oldPosition.y)
       ) {
         this.moving = true;
-        this.socket.emit('playerMovement', {
+        this.socket.emit("playerMovement", {
           x: this.sprite.x,
           y: this.sprite.y,
           roomKey: scene.state.roomKey,
@@ -89,14 +89,14 @@ export default class MainScene extends Phaser.Scene {
   addPlayer(scene, playerInfo) {
     scene.joined = true;
     scene.sprite = scene.physics.add
-      .sprite(playerInfo.x, playerInfo.y, 'sprite')
+      .sprite(playerInfo.x, playerInfo.y, "sprite")
       .setScale(0.7)
       .setVisible(true)
       .setCollideWorldBounds(true);
   }
   addOtherPlayers(scene, playerInfo) {
     const otherPlayer = scene.physics.add
-      .sprite(playerInfo.x + 40, playerInfo.y + 40, 'sprite')
+      .sprite(playerInfo.x + 40, playerInfo.y + 40, "sprite")
       .setScale(0.7)
       .setVisible(true)
       .setCollideWorldBounds(true);
