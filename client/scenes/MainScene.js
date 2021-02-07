@@ -25,6 +25,10 @@ export default class MainScene extends Phaser.Scene {
 		// const banner = this.add.image(400, 50, 'banner');
 		background.height = game.height;
 		background.width = game.width;
+<<<<<<< HEAD
+=======
+		console.log('I changed the height & width!);
+>>>>>>> main
 
 		// CREATE OTHER PLAYERS GROUP
 		this.otherPlayers = this.physics.add.group();
