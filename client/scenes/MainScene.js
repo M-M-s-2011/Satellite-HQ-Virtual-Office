@@ -1,5 +1,6 @@
 import "phaser";
 import connect from "../socket";
+import uniqid from "uniqid";
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -10,8 +11,7 @@ export default class MainScene extends Phaser.Scene {
     this.nearbyPlayers = {};
   }
   preload() {
-    this.load.image("officePlan", "assets/backgrounds/officePlan.png");
-    this.load.image("banner", "assets/backgrounds/banner.png");
+    this.load.image("officePlan", "assets/backgrounds/banner-background.png");
     this.load.image("sprite", "assets/spritesheets/sprite.png");
     this.load.image("bear", "assets/spritesheets/sprite2.png");
     this.load.image("star", "assets/spritesheets/star.png");
@@ -26,19 +26,16 @@ export default class MainScene extends Phaser.Scene {
 
     //background
     const background = this.add.image(350, 350, "officePlan");
-    // const banner = this.add.image(400, 50, 'banner');
     background.height = game.height;
     background.width = game.width;
 
     // CREATE OTHER PLAYERS GROUP
     this.otherPlayers = this.physics.add.group();
 
-    // Join the game room with roomKey 'office'
+    // Join the game room with gameRoomName 'office'
     this.socket.emit("joinRoom", "office");
     //background
-    this.add.image(400, 300, "officePlan");
-    const banner = this.add.image(400, 50, "banner");
-    banner.setScale(0.4);
+
     // CREATE OTHER PLAYERS GROUP
     this.otherPlayers = this.physics.add.group();
 
@@ -84,7 +81,7 @@ export default class MainScene extends Phaser.Scene {
         this.socket.emit("playerMovement", {
           x: this.sprite.x,
           y: this.sprite.y,
-          roomKey: scene.state.roomKey,
+          gameRoomName: scene.state.gameRoomName,
         });
       }
       // save old position data
@@ -152,6 +149,18 @@ export default class MainScene extends Phaser.Scene {
     ) {
       // code inside this block runs only the first time overlap is triggered betwen player and otherPlayer
       this.nearbyPlayers[otherPlayer.playerId] = otherPlayer;
+      //check if player already in a videocall, if not, call the other player
+      if (!player.videoRoomName) {
+        //join other player's video room if they're in a call or create a new room
+        player.videoRoomName = otherPlayer.videoRoomName || uniqid("video-");
+        console.log(player.videoRoomName);
+        console.log("socket:", this.socket);
+        console.log(
+          "emit:",
+          this.socket.emit("joinCall", player.videoRoomName)
+        );
+      }
+
       console.log("checking Overlap:", player.playerId, otherPlayer.playerId);
     }
   }
