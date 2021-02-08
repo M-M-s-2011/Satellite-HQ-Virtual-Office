@@ -34,7 +34,7 @@ export default class MainScene extends Phaser.Scene {
     // CREATE OTHER PLAYERS GROUP
     this.otherPlayers = this.physics.add.group();
 
-    // Join the game room with roomKey 'office'
+    // Join the game room with gameRoomName 'office'
     this.socket.emit("joinRoom", "office");
     //background
     this.add.image(400, 300, "officePlan");
@@ -85,7 +85,7 @@ export default class MainScene extends Phaser.Scene {
         this.socket.emit("playerMovement", {
           x: this.sprite.x,
           y: this.sprite.y,
-          roomKey: scene.state.roomKey,
+          gameRoomName: scene.state.gameRoomName,
         });
       }
       // save old position data

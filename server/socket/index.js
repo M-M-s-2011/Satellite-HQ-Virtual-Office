@@ -1,11 +1,11 @@
 //Place to call all the socket functions
-const connectChatRoutes = require('./chat');
-const connectVideoRoutes = require('./video');
-const connectGameRoutes = require('./game');
+const connectChatRoutes = require("./chat");
+const connectVideoRoutes = require("./video");
+const connectGameRoutes = require("./game");
 
 const gameRooms = {
   office: {
-    roomKey: 'office',
+    gameRoomName: "office",
     players: {},
     numPlayers: 0,
   },

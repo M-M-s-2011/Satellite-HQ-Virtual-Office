@@ -5,7 +5,9 @@
 
 //Define event listeners here
 const joinCall = (socket, videoRoomName) => {
-  socket.to(videoRoomName).emit("joinedCall");
+  socket.join(videoRoomName);
+  socket.emit("joinedCall");
+  console.log("joined at server");
 };
 
 //Get room name
@@ -16,6 +18,6 @@ const leaveCall = () => {};
 
 module.exports = (io) => {
   io.on("connection", (socket) => {
-    socket.on("joinCall", (videoRoomName) => joinRoom(socket, videoRoomName));
+    socket.on("joinCall", (videoRoomName) => joinCall(socket, videoRoomName));
   });
 };
