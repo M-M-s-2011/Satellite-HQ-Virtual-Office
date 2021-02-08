@@ -1,5 +1,7 @@
 import "phaser";
 import connect from "../socket";
+import ChatScene from "./ChatScene";
+import ChatPanel from "../entity/ChatPanel";
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -14,6 +16,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("sprite", "assets/spritesheets/sprite.png");
     this.load.image("bear", "assets/spritesheets/sprite2.png");
     this.load.image("star", "assets/spritesheets/star.png");
+    this.load.image("chatMachine", "assets/sprites/chatMachine.png");
   }
 
   create() {
@@ -37,6 +40,15 @@ export default class MainScene extends Phaser.Scene {
 
     // CREATE OTHER PLAYERS GROUP
     this.otherPlayers = this.physics.add.group();
+
+    // CONTROL PANELS
+    this.chatPanelGroup = this.physics.add.staticGroup({
+      classType: ChatPanel,
+    });
+
+    this.chatMachine = this.chatPanelGroup.create(300, 300, "chatMachine");
+
+    scene.scene.launch("ChatScene", { socket: scene.socket });
 
     //set movement keys to arrow keys
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -98,7 +110,30 @@ export default class MainScene extends Phaser.Scene {
       // check the otherPlayers we were previously overlapping with
       // remove any where that's no longer the case
       this.checkOverlap(scene);
+
+      this.chatMachine.on("overlap", () => {
+        scene.scene.start("ChatScene", {
+          ...scene.state,
+          socket: scene.socket,
+        });
+        scene.physics.pause();
+      });
+
+      if (this.sprite) {
+        this.physics.add.overlap(
+          scene.sprite,
+          scene.chatMachine,
+          scene.highlightChatMachine,
+          null,
+          this
+        );
+      }
     }
+  }
+
+  highlightChatPanel(sprite, chatPanel) {
+    chatPanel.setTint(0xbdef83);
+    chatPanel.setInteractive();
   }
 
   //need to change sprite location to dynamic
