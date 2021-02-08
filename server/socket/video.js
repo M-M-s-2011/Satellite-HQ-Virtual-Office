@@ -4,7 +4,11 @@
 //Define event listeners here
 
 //Define event listeners here
-const joinCall = () => {};
+const joinCall = (socket, videoRoomName) => {
+  socket.join(videoRoomName);
+  socket.emit("joinedCall");
+  console.log("joined at server");
+};
 
 //Get room name
 const getVideoChannel = () => {};
@@ -12,4 +16,8 @@ const getVideoChannel = () => {};
 //Leave call
 const leaveCall = () => {};
 
-module.exports = (io) => {};
+module.exports = (io) => {
+  io.on("connection", (socket) => {
+    socket.on("joinCall", (videoRoomName) => joinCall(socket, videoRoomName));
+  });
+};

@@ -3,82 +3,86 @@
 //emits from backend
 
 //back end event listeners for game
-const joinRoom = (socket, gameRooms, roomKey) => {
-  socket.join(roomKey);
-  const roomInfo = gameRooms[roomKey];
-  roomInfo.players[socket.id] = {
+const joinRoom = (socket, gameRooms, gameRoomName) => {
+  socket.join(gameRoomName);
+  const gameRoomInfo = gameRooms[gameRoomName];
+  gameRoomInfo.players[socket.id] = {
     rotation: 0,
     x: 400,
     y: 300,
     playerId: socket.id,
   };
   //update number of players
-  roomInfo.numPlayers = Object.keys(roomInfo.players).length;
+  gameRoomInfo.numPlayers = Object.keys(gameRoomInfo.players).length;
 
   // set initial state
-  socket.emit('setState', roomInfo);
+  socket.emit("setState", gameRoomInfo);
 
   //send the players object to the new player
-  socket.emit('currentPlayers', {
-    players: roomInfo.players,
-    numPlayers: roomInfo.numPlayers,
+  socket.emit("currentPlayers", {
+    players: gameRoomInfo.players,
+    numPlayers: gameRoomInfo.numPlayers,
   });
 
   // update all other players of the new player
-  socket.to(roomKey).emit('newPlayer', {
-    playerInfo: roomInfo.players[socket.id],
-    numPlayers: roomInfo.numPlayers,
+  socket.to(gameRoomName).emit("newPlayer", {
+    playerInfo: gameRoomInfo.players[socket.id],
+    numPlayers: gameRoomInfo.numPlayers,
   });
 };
 
 //when a player moves, update the player data
 const playerMoved = (socket, gameRooms, data) => {
-  const { x, y, roomKey } = data;
-  gameRooms[roomKey].players[socket.id].x = x;
-  gameRooms[roomKey].players[socket.id].y = y;
+  const { x, y, gameRoomName } = data;
+  gameRooms[gameRoomName].players[socket.id].x = x;
+  gameRooms[gameRoomName].players[socket.id].y = y;
   // emit a message to all players about the player that moved
-  socket.to(roomKey).emit('playerMoved', gameRooms[roomKey].players[socket.id]);
+  socket
+    .to(gameRoomName)
+    .emit("playerMoved", gameRooms[gameRoomName].players[socket.id]);
 };
 
 // when a player disconnects, remove them from our players object
 const disconnect = (socket, gameRooms, io) => {
   //find which room they belong to
-  let roomKey = '';
+  let gameRoomName = "";
   for (let keys1 in gameRooms) {
     for (let keys2 in gameRooms[keys1]) {
       Object.keys(gameRooms[keys1][keys2]).map((el) => {
         if (el === socket.id) {
-          roomKey = keys1;
+          gameRoomName = keys1;
         }
       });
     }
   }
 
-  const roomInfo = gameRooms[roomKey];
+  const gameRoomInfo = gameRooms[gameRoomName];
 
-  if (roomInfo) {
-    console.log('user disconnected: ', socket.id);
+  if (gameRoomInfo) {
+    console.log("user disconnected: ", socket.id);
     // remove this player from our players object
-    delete roomInfo.players[socket.id];
+    delete gameRoomInfo.players[socket.id];
     // update numPlayers
-    roomInfo.numPlayers = Object.keys(roomInfo.players).length;
+    gameRoomInfo.numPlayers = Object.keys(gameRoomInfo.players).length;
     // emit a message to all players to remove this player
-    io.to(roomKey).emit('disconnected', {
+    io.to(gameRoomName).emit("disconnected", {
       playerId: socket.id,
-      numPlayers: roomInfo.numPlayers,
+      numPlayers: gameRoomInfo.numPlayers,
     });
   }
 };
 
 //connect event listeners
 const connectGame = (io, gameRooms) => {
-  io.on('connection', (socket) => {
-    socket.on('joinRoom', (roomKey) => joinRoom(socket, gameRooms, roomKey));
+  io.on("connection", (socket) => {
+    socket.on("joinRoom", (gameRoomName) =>
+      joinRoom(socket, gameRooms, gameRoomName)
+    );
 
     // when a player moves, update the player data, & notify all players
-    socket.on('playerMovement', (data) => playerMoved(socket, gameRooms, data));
+    socket.on("playerMovement", (data) => playerMoved(socket, gameRooms, data));
     // when a player disconnects, remove the player data from the room and notify all players
-    socket.on('disconnect', () => disconnect(socket, gameRooms, io));
+    socket.on("disconnect", () => disconnect(socket, gameRooms, io));
   });
 };
 

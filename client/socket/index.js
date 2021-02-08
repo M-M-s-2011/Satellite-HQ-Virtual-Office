@@ -1,10 +1,11 @@
-import connectChat from './chat'
+import connectChat from "./chat";
 import connectGame from "./game";
-import connectVideoRoutes from "./video";
+import connectVideo from "./video";
 
 const connect = (scene) => {
-  connectChat(scene)
+  connectChat(scene);
   connectGame(scene);
+  connectVideo(scene);
 };
 
 export default connect;
