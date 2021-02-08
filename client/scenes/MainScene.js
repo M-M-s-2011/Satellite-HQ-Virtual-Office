@@ -11,8 +11,7 @@ export default class MainScene extends Phaser.Scene {
     this.nearbyPlayers = {};
   }
   preload() {
-    this.load.image("officePlan", "assets/backgrounds/officePlan.png");
-    this.load.image("banner", "assets/backgrounds/banner.png");
+    this.load.image("officePlan", "assets/backgrounds/banner-background.png");
     this.load.image("sprite", "assets/spritesheets/sprite.png");
     this.load.image("bear", "assets/spritesheets/sprite2.png");
     this.load.image("star", "assets/spritesheets/star.png");
@@ -27,7 +26,6 @@ export default class MainScene extends Phaser.Scene {
 
     //background
     const background = this.add.image(350, 350, "officePlan");
-    // const banner = this.add.image(400, 50, 'banner');
     background.height = game.height;
     background.width = game.width;
 
@@ -37,9 +35,7 @@ export default class MainScene extends Phaser.Scene {
     // Join the game room with gameRoomName 'office'
     this.socket.emit("joinRoom", "office");
     //background
-    this.add.image(400, 300, "officePlan");
-    const banner = this.add.image(400, 50, "banner");
-    banner.setScale(0.4);
+
     // CREATE OTHER PLAYERS GROUP
     this.otherPlayers = this.physics.add.group();
 
