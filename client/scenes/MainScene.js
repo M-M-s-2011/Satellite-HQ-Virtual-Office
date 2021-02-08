@@ -44,7 +44,7 @@ export default class MainScene extends Phaser.Scene {
 
 		//set physics and bounds on the game world
 		this.physics.world.enable(this);
-		this.physics.world.setBounds(0, 0, 800, 600);
+		this.physics.world.setBounds(0, 0, 800, 300);
 	}
 	update() {
 		const scene = this;
@@ -115,7 +115,7 @@ export default class MainScene extends Phaser.Scene {
 	addOtherPlayers(scene, playerInfo) {
 		const otherPlayer = scene.physics.add
 			.sprite(playerInfo.x + 40, playerInfo.y + 40, 'star')
-			.setScale(0.7)
+			.setScale(1)
 			.setVisible(true)
 			.setCollideWorldBounds(true);
 		otherPlayer.playerId = playerInfo.playerId;
