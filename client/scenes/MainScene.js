@@ -1,5 +1,6 @@
 import "phaser";
 import connect from "../socket";
+import uniqid from "uniqid";
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -152,6 +153,18 @@ export default class MainScene extends Phaser.Scene {
     ) {
       // code inside this block runs only the first time overlap is triggered betwen player and otherPlayer
       this.nearbyPlayers[otherPlayer.playerId] = otherPlayer;
+      //check if player already in a videocall, if not, call the other player
+      if (!player.videoRoomName) {
+        //join other player's video room if they're in a call or create a new room
+        player.videoRoomName = otherPlayer.videoRoomName || uniqid("video-");
+        console.log(player.videoRoomName);
+        console.log("socket:", this.socket);
+        console.log(
+          "emit:",
+          this.socket.emit("joinCall", player.videoRoomName)
+        );
+      }
+
       console.log("checking Overlap:", player.playerId, otherPlayer.playerId);
     }
   }
