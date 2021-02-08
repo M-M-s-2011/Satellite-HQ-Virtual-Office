@@ -12,6 +12,7 @@ export default class ChatScene extends Phaser.Scene {
   }
   preload() {
     this.load.image("chatMachine", "assets/sprites/chatMachine.png");
+    this.load.html("codeform", "assets/text/chatForm.html");
   }
   create() {
     const scene = this;

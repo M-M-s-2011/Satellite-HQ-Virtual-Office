@@ -48,10 +48,9 @@ export default class MainScene extends Phaser.Scene {
 
     this.chatMachine = this.chatPanelGroup.create(300, 300, "chatMachine");
 
-    scene.scene.launch("ChatScene", { socket: scene.socket });
-
     //set movement keys to arrow keys
     this.cursors = this.input.keyboard.createCursorKeys();
+    //add listener to chat box
 
     //set physics and bounds on the game world
     this.physics.world.enable(this);
@@ -110,8 +109,11 @@ export default class MainScene extends Phaser.Scene {
       // check the otherPlayers we were previously overlapping with
       // remove any where that's no longer the case
       this.checkOverlap(scene);
+      // this.chatMachine.addListener("click");
 
-      this.chatMachine.on("overlap", () => {
+      this.chatMachine.on("pointerdown", () => {
+        console.log("that tickles!!");
+        scene.scene.launch("ChatScene", { socket: scene.socket });
         scene.scene.start("ChatScene", {
           ...scene.state,
           socket: scene.socket,
@@ -119,19 +121,21 @@ export default class MainScene extends Phaser.Scene {
         scene.physics.pause();
       });
 
-      if (this.sprite) {
-        this.physics.add.overlap(
-          scene.sprite,
-          scene.chatMachine,
-          scene.highlightChatMachine,
-          null,
-          this
-        );
-      }
+      this.physics.add.overlap(
+        scene.sprite,
+        scene.chatMachine,
+        scene.highlightChatMachine,
+        null,
+        this
+      );
     }
   }
 
-  highlightChatPanel(sprite, chatPanel) {
+  // saySomething(sprite, chatPanel) {
+  //   console.log("that tickles!")
+  // }
+
+  highlightChatMachine(sprite, chatPanel) {
     chatPanel.setTint(0xbdef83);
     chatPanel.setInteractive();
   }
