@@ -1,11 +1,11 @@
+import { ICE_SERVERS, PEER_VIDEOS, VIDEO_SETTINGS } from "./RTC/constants";
+
 //front end event listeners for video
 const joinedCall = async (scene) => {
   try {
-    console.log("I joined at client!!");
-    const userStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: { width: 200, height: 200 },
-    });
+    const userStream = await navigator.mediaDevices.getUserMedia(
+      VIDEO_SETTINGS
+    );
     scene.userStream = userStream;
     const video = document.getElementById("myvideo");
     video.srcObject = userStream;
