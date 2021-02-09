@@ -43,6 +43,15 @@ const playerMoved = (scene, playerInfo) => {
     }
   });
 };
+
+const playerUpdatedVRName = (scene, playerInfo) => {
+  scene.otherPlayers.getChildren().forEach(function (otherPlayer) {
+    if (playerInfo.playerId === otherPlayer.playerId) {
+      otherPlayer.videoRoomName = playerInfo.videoRoomName;
+    }
+  });
+};
+
 //disconnected
 const disconnected = (scene, arg) => {
   const { playerId, numPlayers } = arg;
@@ -64,6 +73,9 @@ const connectGame = (scene) => {
   scene.socket.on("newPlayer", (arg) => newPlayer(scene, arg));
   scene.socket.on("playerMoved", (playerInfo) =>
     playerMoved(scene, playerInfo)
+  );
+  scene.socket.on("playerUpdatedVRName", (playerInfo) =>
+    playerUpdatedVRName(scene, playerInfo)
   );
   scene.socket.on("disconnected", (arg) => disconnected(scene, arg));
 };
