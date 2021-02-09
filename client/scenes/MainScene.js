@@ -151,6 +151,8 @@ export default class MainScene extends Phaser.Scene {
       // code inside this block runs only the first time overlap is triggered betwen player and otherPlayer
       this.nearbyPlayers[otherPlayer.playerId] = otherPlayer;
       //check if player already in a videocall, if not, call the other player
+
+      //on click "join call" --> from toast notif button
       if (!player.videoRoomName) {
         //join other player's video room if they're in a call or create a new room
         player.videoRoomName = otherPlayer.videoRoomName || uniqid("video-");
