@@ -17,8 +17,13 @@ const joinedCall = async (scene) => {
   }
 };
 
+const peerJoinedCall = (scene, peerId) => {
+  console.log("peer joined call @client/video", scene.socket.id, peerId);
+};
+
 const connectVideo = (scene) => {
   scene.socket.on("joinedCall", () => joinedCall(scene));
+  scene.socket.on("peerJoinedCall", (peerId) => peerJoinedCall(scene, peerId));
 };
 
 export default connectVideo;
