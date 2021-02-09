@@ -10,6 +10,7 @@ export default class MainScene extends Phaser.Scene {
     // Store ids of players overlapping with our sprite
     // Should we move this to a property of scene.state?
     this.nearbyPlayers = {};
+    this.rtcPeerConnections = {};
   }
   preload() {
     this.load.image("officePlan", "assets/backgrounds/officePlan2.png");
