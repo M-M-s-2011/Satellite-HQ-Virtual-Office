@@ -1,3 +1,6 @@
 #mygame {
-	background-color: #ee4b6a;
+  background-color: #ee4b6a;
+}
+#video {
+  display: flex;
 }
