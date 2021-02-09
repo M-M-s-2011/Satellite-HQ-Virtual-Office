@@ -1,0 +1,8 @@
+Option 1: a user joins a room, the server sends them back a list of everyone already in there, then the user loops through and sends offers to each of them.
+
+Option 2: a user joins a room, the server notifies everyone in the room that a new user joined, existing users send offers to the new user. 
+    -add another emit event in joinCall func
+    -add a listener for newUser on the frontend
+    -those in room will send an offer to that newUser
+    -make the newUser listen for an offer and send an answer when received
+    -function that listens for answer and adds the video in response. 
