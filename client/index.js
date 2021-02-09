@@ -6,6 +6,7 @@ import MainScene from "./scenes/MainScene";
 
 class Game extends Phaser.Game {
   constructor() {
+    //this is a test message from LB for their heroku!
     super(config);
     this.scene.add("MainScene", MainScene);
     this.scene.start("MainScene");
