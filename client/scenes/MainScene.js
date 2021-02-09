@@ -1,6 +1,7 @@
 import "phaser";
 import connect from "../socket";
 import uniqid from "uniqid";
+import Toast from "../../public/toast/toast";
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -161,6 +162,7 @@ export default class MainScene extends Phaser.Scene {
         );
       }
 
+      Toast.show("Join video call?", "success");
       console.log("checking Overlap:", player.playerId, otherPlayer.playerId);
     }
   }
