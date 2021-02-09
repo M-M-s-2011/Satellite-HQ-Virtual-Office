@@ -1,3 +1,50 @@
+body {
+  background-image: url(https://images.unsplash.com/photo-1505506874110-6a7a69069a08?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=934&q=80);
+  color: white;
+  text-align: center;
+}
+#parent {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
 #mygame {
-	background-color: #ee4b6a;
+  background-color: black;
+  /* border-radius: 15px; */
+}
+#videocontainer {
+  margin-right: 20px;
+  display: flex;
+  border: 2px solid white;
+  border-radius: 0.9375rem;
+  background: rgb(240, 182, 182);
+  opacity: 0.8;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 0;
+}
+#chatbox {
+  margin-left: 20px;
+  border: 2px solid white;
+  border-radius: 0.9375rem;
+  background: rgb(240, 182, 182);
+  opacity: 0.8;
+}
+
+h4 {
+  text-align: center;
+  /* color: white; */
+}
+
+#videocontainer video {
+  border-radius: 9.375rem;
+  /* opacity: 100%; */
+  z-index: 2;
+}
+
+#videoRoom {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
 }
