@@ -205,4 +205,26 @@ export default class MainScene extends Phaser.Scene {
       }
     });
   }
+  //Leaving video call
+  leaveVideoCall(scene) {
+    //closing all of our RTC peer connections
+    for (let peerId in scene.rtcPeerConnections) {
+      let connection = scene.rtcPeerConnections[peerId];
+      connection.close();
+      connection.ontrack = null;
+      connection.onicecandidate = null;
+    }
+    scene.rtcPeerConnections = {};
+    //Stop our video
+    const video = document.getElementById("myvideo");
+    video.srcObject = null;
+    //Stop peer videos
+    const peerVideos = document.getElementById("peervideos");
+    peerVideos.innerHTML = "";
+    //tell the server to remove us from the leaveCall
+    scene.socket.emit("leaveCall", scene.sprite.videoRoomName);
+    scene.sprite.videoRoomName = null;
+    //tell other players we're not in a call
+    scene.socket.emit("updateVRName", null, scene.gameRoomName);
+  }
 }
