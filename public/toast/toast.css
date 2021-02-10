@@ -1,32 +1,29 @@
 .toast {
-    position: fixed;
-    top: 20px;
-    left: 0;
-    right: 0;
-    margin: auto;
+  position: fixed;
+  top: 20px;
+  left: 0;
+  right: 0;
+  margin: auto;
 
-    max-width: 400px;
-    padding: 6px;
-    background: #157279;
+  max-width: 400px;
+  padding: 6px;
+  background: #a2ebf0;
 
-    color: #a2ebf0;
-    font-family: sans-serif;
-    text-align: center;
+  color: navy;
+  font-family: sans-serif;
+  text-align: center;
 
-    border: 1px solid #000000;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(68, 66, 66, 0.2);
-    
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.2s, top 0.2s, visibility 0.2s;
+  border: 1px solid #000000;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(76, 136, 160, 0.2);
 
-
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s, top 0.2s, visibility 0.2s;
 }
 
 .toast--visible {
-    top: 20px;
-    opacity: 1;
-    visibility: visible;
+  top: 20px;
+  opacity: 1;
+  visibility: visible;
 }
-
