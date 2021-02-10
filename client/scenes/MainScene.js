@@ -10,6 +10,7 @@ export default class MainScene extends Phaser.Scene {
     // Store ids of players overlapping with our sprite
     // Should we move this to a property of scene.state?
     this.nearbyPlayers = {};
+    this.rtcPeerConnections = {};
   }
   preload() {
     this.load.image("officePlan", "assets/backgrounds/officePlan2.png");
@@ -110,6 +111,9 @@ export default class MainScene extends Phaser.Scene {
       .setScale(0.7)
       .setVisible(true)
       .setCollideWorldBounds(true);
+
+    //Set videoRoomName on sprite
+    scene.sprite.videoRoomName = playerInfo.videoRoomName;
     scene.sprite.playerId = playerInfo.playerId;
   }
   addOtherPlayers(scene, playerInfo) {
@@ -118,7 +122,9 @@ export default class MainScene extends Phaser.Scene {
       .setScale(0.7)
       .setVisible(true)
       .setCollideWorldBounds(true);
+    //Set videoRoomName on other players
     otherPlayer.playerId = playerInfo.playerId;
+    otherPlayer.videoRoomName = playerInfo.videoRoomName;
     scene.otherPlayers.add(otherPlayer);
   }
   // Add overlap for a pair of players
@@ -154,13 +160,23 @@ export default class MainScene extends Phaser.Scene {
       //on click "join call" --> from toast notif button
       if (!player.videoRoomName) {
         //join other player's video room if they're in a call or create a new room
+        //setting our videoRoomName
         player.videoRoomName = otherPlayer.videoRoomName || uniqid("video-");
-        console.log(player.videoRoomName);
-        console.log("socket:", this.socket);
-        console.log(
-          "emit:",
-          this.socket.emit("joinCall", player.videoRoomName)
-        );
+
+        let videoRoomName = player.videoRoomName;
+        let gameRoomName = this.state.gameRoomName;
+
+        //updating our video room name & letting other players know what it is
+        this.socket.emit("updateVRName", { videoRoomName, gameRoomName });
+        //go to server/game and add a listener
+
+        console.log("our VRN", player.videoRoomName);
+        console.log("their VRN", otherPlayer.videoRoomName);
+
+        // console.log("socket:", this.socket);
+
+        //join the call vvvvv
+        this.socket.emit("joinCall", player.videoRoomName);
       }
 
       Toast.show("Join video call?", "success");

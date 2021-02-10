@@ -48,6 +48,9 @@ h4 {
   align-content: center;
 }
 
-h1 {
-  font-family: Inndam;
+
+#peerRoom {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
 }

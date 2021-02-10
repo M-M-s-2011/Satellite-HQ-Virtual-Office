@@ -11,6 +11,7 @@ const joinRoom = (socket, gameRooms, gameRoomName) => {
     x: 400,
     y: 300,
     playerId: socket.id,
+    videoRoomName: null,
   };
   //update number of players
   gameRoomInfo.numPlayers = Object.keys(gameRoomInfo.players).length;
@@ -40,6 +41,17 @@ const playerMoved = (socket, gameRooms, data) => {
   socket
     .to(gameRoomName)
     .emit("playerMoved", gameRooms[gameRoomName].players[socket.id]);
+};
+
+//this function sends the video room name out to other players in the game room to join.
+const updateVRName = (socket, gameRooms, data) => {
+  const { videoRoomName, gameRoomName } = data;
+
+  //broadcast the player info with updated VR name to all players
+  gameRooms[gameRoomName].players[socket.id].videoRoomName = videoRoomName;
+  socket
+    .to(gameRoomName)
+    .emit("playerUpdatedVRName", gameRooms[gameRoomName].players[socket.id]);
 };
 
 // when a player disconnects, remove them from our players object
@@ -81,6 +93,11 @@ const connectGame = (io, gameRooms) => {
 
     // when a player moves, update the player data, & notify all players
     socket.on("playerMovement", (data) => playerMoved(socket, gameRooms, data));
+
+    socket.on("updateVRName", (data) => {
+      updateVRName(socket, gameRooms, data);
+    });
+
     // when a player disconnects, remove the player data from the room and notify all players
     socket.on("disconnect", () => disconnect(socket, gameRooms, io));
   });
