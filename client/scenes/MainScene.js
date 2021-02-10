@@ -170,8 +170,8 @@ export default class MainScene extends Phaser.Scene {
         this.socket.emit("updateVRName", { videoRoomName, gameRoomName });
         //go to server/game and add a listener
 
-        console.log("our VRN", player.videoRoomName);
-        console.log("their VRN", otherPlayer.videoRoomName);
+        // console.log("our VRN", player.videoRoomName);
+        // console.log("their VRN", otherPlayer.videoRoomName);
 
         // console.log("socket:", this.socket);
 
@@ -180,7 +180,7 @@ export default class MainScene extends Phaser.Scene {
       }
 
       // Toast.show("Join video call?", "success"); //commented out until hooked up
-      console.log("checking Overlap:", player.playerId, otherPlayer.playerId);
+      // console.log("checking Overlap:", player.playerId, otherPlayer.playerId);
     }
   }
   // Check whether there are any nearbyPlayers that we're no longer overlapping with

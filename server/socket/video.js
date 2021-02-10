@@ -4,7 +4,7 @@
 const joinCall = (socket, videoRoomName) => {
   socket.join(videoRoomName);
   socket.emit("joinedCall");
-  console.log("joined at server");
+  // console.log("joined at server");
   //notify users already in call that another user has joined
   socket.to(videoRoomName).emit("peerJoinedCall", socket.id);
 };

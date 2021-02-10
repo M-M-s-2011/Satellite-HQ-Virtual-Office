@@ -25,14 +25,14 @@ const joinedCall = async (scene) => {
 };
 
 const peerJoinedCall = async (scene, peerId) => {
-  console.log("peer joined call @client/video", scene.socket.id, peerId);
+  // console.log("peer joined call @client/video", scene.socket.id, peerId);
   await loadUserStream(scene);
   // Create and store RTCPeerConnection
   const rtcPeerConnection = createRTCPeerConnection(scene, peerId);
   // Create the offer and emit it to the server
   const offer = await rtcPeerConnection.createOffer();
   rtcPeerConnection.setLocalDescription(offer);
-  console.log("Offer created");
+  // console.log("Offer created");
   scene.socket.emit("offerCreated", peerId, offer);
 };
 
@@ -64,9 +64,9 @@ const iceCandidateReceived = (scene, peerId, iceCandidate) => {
 const answerReceived = (scene, peerId, answer) => {
   // Received an answer from a peer at socket peerId
   // Find the corresponding RTCPeerConnection object and update its remote description
-  console.log("answer received");
+  // console.log("answer received");
   scene.rtcPeerConnections[peerId].setRemoteDescription(answer);
-  console.log(document.getElementsByTagName("video"));
+  // console.log(document.getElementsByTagName("video"));
 };
 
 const connectVideo = (scene) => {
