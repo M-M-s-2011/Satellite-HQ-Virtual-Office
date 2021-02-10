@@ -41,7 +41,13 @@ export default class MainScene extends Phaser.Scene {
     this.otherPlayers = this.physics.add.group();
 
     //set movement keys to arrow keys
-    this.cursors = this.input.keyboard.createCursorKeys();
+    const keys = scene.input.keyboard.addKeys({
+      up: "up",
+      down: "down",
+      left: "left",
+      right: "right",
+    }); // keys.up, keys.down, keys.left, keys.right
+    this.cursors = keys;
 
     //set physics and bounds on the game world
     this.physics.world.enable(this);
