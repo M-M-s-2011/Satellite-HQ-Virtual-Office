@@ -7,13 +7,38 @@
     <link rel="stylesheet" href="./toast/toast.css"
   </head>
   <body>
-    <div id="video">
-      <video id="myvideo" muted></video>
+    <div><h1>Satellite HQ!</h1></div>
+    <div id="parent">
+      <div id="videocontainer">
+        <!--a chat form box goes here-->
+        <div id="videoRoom">
+          <div>
+            <h4>My Video</h4>
+            <div id="selfvideo">
+              <video id="myvideo" className="videos" muted></video>
+            </div>
+          </div>
+        </div>
+        <div id="peerRoom">
+          <h4>Peer Video</h4>
+          <video id="peervideo" className="videos" muted></video>
+        </div>
+      </div>
+      <br />
+      <div id="mygame"></div>
+      <br />
+      <div id="chatbox">
+        <h4>My Chatroom</h4>
+        <div>
+          <p>This is where the messages go</p>
+        </div>
+        <input type="text" name="chat" placeholder="Enter a message" />
+        <button>Send</button>
+      </div>
     </div>
-    <div id="mygame"></div>
+
     <script src="/socket.io/socket.io.js"></script>
     <script src="bundle.js" charset="utf-8"></script>
     <script src="./toast/toast.js"></script>
-
   </body>
 </html>
