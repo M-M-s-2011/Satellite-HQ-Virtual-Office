@@ -179,7 +179,7 @@ export default class MainScene extends Phaser.Scene {
         this.socket.emit("joinCall", player.videoRoomName);
       }
 
-      Toast.show("Join video call?", "success");
+      // Toast.show("Join video call?", "success"); //commented out until hooked up
       console.log("checking Overlap:", player.playerId, otherPlayer.playerId);
     }
   }
