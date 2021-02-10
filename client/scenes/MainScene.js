@@ -41,7 +41,13 @@ export default class MainScene extends Phaser.Scene {
     this.otherPlayers = this.physics.add.group();
 
     //set movement keys to arrow keys
-    this.cursors = this.input.keyboard.createCursorKeys();
+    const keys = scene.input.keyboard.addKeys({
+      up: "up",
+      down: "down",
+      left: "left",
+      right: "right",
+    }); // keys.up, keys.down, keys.left, keys.right
+    this.cursors = keys;
 
     //set physics and bounds on the game world
     this.physics.world.enable(this);
@@ -170,8 +176,8 @@ export default class MainScene extends Phaser.Scene {
         this.socket.emit("updateVRName", { videoRoomName, gameRoomName });
         //go to server/game and add a listener
 
-        console.log("our VRN", player.videoRoomName);
-        console.log("their VRN", otherPlayer.videoRoomName);
+        // console.log("our VRN", player.videoRoomName);
+        // console.log("their VRN", otherPlayer.videoRoomName);
 
         // console.log("socket:", this.socket);
 
@@ -179,8 +185,8 @@ export default class MainScene extends Phaser.Scene {
         this.socket.emit("joinCall", player.videoRoomName);
       }
 
-      Toast.show("Join video call?", "success");
-      console.log("checking Overlap:", player.playerId, otherPlayer.playerId);
+      // Toast.show("Join video call?", "success"); //commented out until hooked up
+      // console.log("checking Overlap:", player.playerId, otherPlayer.playerId);
     }
   }
   // Check whether there are any nearbyPlayers that we're no longer overlapping with

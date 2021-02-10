@@ -71,7 +71,7 @@ const disconnect = (socket, gameRooms, io) => {
   const gameRoomInfo = gameRooms[gameRoomName];
 
   if (gameRoomInfo) {
-    console.log("user disconnected: ", socket.id);
+    // console.log("user disconnected: ", socket.id);
     // remove this player from our players object
     delete gameRoomInfo.players[socket.id];
     // update numPlayers

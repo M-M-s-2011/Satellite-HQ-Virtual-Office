@@ -1,17 +1,17 @@
-import { ICE_SERVERS, PEER_VIDEOS, VIDEO_SETTINGS } from './constants';
+import { ICE_SERVERS, PEER_VIDEOS, VIDEO_SETTINGS } from "./constants";
 
 //things that have to do with the functions that you put inside createOffer() & createAnswer(), and things you add to RTCPeerConnections
 // Waits for an ICE candidate to be created, then signals server
 export const emitIceCandidateCreated = (scene, peerId, event) => {
   if (event.candidate) {
-    scene.socket.emit('iceCandidateCreated', peerId, event.candidate);
+    scene.socket.emit("iceCandidateCreated", peerId, event.candidate);
   }
 };
 
 // Event listener for media stream from a remote peer
 // Creates a video tage with id `video_${peerId}`, loads the media stream, and plays
 export const loadPeerVideo = (peerVideo, event) => {
-  console.log('event', event);
+  // console.log('event', event);
   peerVideo.srcObject = event.streams[0];
   peerVideo.onloadedmetadata = () => peerVideo.play();
 };
@@ -31,7 +31,7 @@ export const createRTCPeerConnection = (scene, peerId) => {
 
   // Create video tag for peer video
   // to be loaded later
-  const peerVideo = document.createElement('video');
+  const peerVideo = document.createElement("video");
   peerVideo.id = `video_${peerId}`;
   PEER_VIDEOS.appendChild(peerVideo);
 
