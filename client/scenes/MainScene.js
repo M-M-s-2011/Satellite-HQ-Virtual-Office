@@ -225,6 +225,9 @@ export default class MainScene extends Phaser.Scene {
     scene.socket.emit("leaveCall", scene.sprite.videoRoomName);
     scene.sprite.videoRoomName = null;
     //tell other players we're not in a call
-    scene.socket.emit("updateVRName", null, scene.gameRoomName);
+    scene.socket.emit("updateVRName", {
+      videoRoomName: null,
+      gameRoomName: scene.state.gameRoomName,
+    });
   }
 }
