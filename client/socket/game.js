@@ -43,15 +43,6 @@ const playerMoved = (scene, playerInfo) => {
     }
   });
 };
-
-const playerUpdatedVRName = (scene, playerInfo) => {
-  scene.otherPlayers.getChildren().forEach(function (otherPlayer) {
-    if (playerInfo.playerId === otherPlayer.playerId) {
-      otherPlayer.videoRoomName = playerInfo.videoRoomName;
-    }
-  });
-};
-
 //disconnected
 const disconnected = (scene, arg) => {
   const { playerId, numPlayers } = arg;
@@ -68,16 +59,13 @@ const disconnected = (scene, arg) => {
 
 const connectGame = (scene) => {
   //when a socket emits "setState", it sets the state in the payload of the socket emission
-  scene.socket.on("setState", (state) => setState(scene, state));
-  scene.socket.on("currentPlayers", (arg) => currentPlayers(scene, arg));
-  scene.socket.on("newPlayer", (arg) => newPlayer(scene, arg));
-  scene.socket.on("playerMoved", (playerInfo) =>
+  scene.socket.on('setState', (state) => setState(scene, state));
+  scene.socket.on('currentPlayers', (arg) => currentPlayers(scene, arg));
+  scene.socket.on('newPlayer', (arg) => newPlayer(scene, arg));
+  scene.socket.on('playerMoved', (playerInfo) =>
     playerMoved(scene, playerInfo)
   );
-  scene.socket.on("playerUpdatedVRName", (playerInfo) =>
-    playerUpdatedVRName(scene, playerInfo)
-  );
-  scene.socket.on("disconnected", (arg) => disconnected(scene, arg));
+  scene.socket.on('disconnected', (arg) => disconnected(scene, arg));
 };
 
 export default connectGame;
