@@ -1,10 +1,10 @@
-import 'phaser';
-import connect from '../socket';
-import uniqid from 'uniqid';
+import "phaser";
+import connect from "../socket";
+import uniqid from "uniqid";
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
-    super('MainScene');
+    super("MainScene");
     this.state = {};
     // Store ids of players overlapping with our sprite
     // Should we move this to a property of scene.state?
@@ -13,9 +13,9 @@ export default class MainScene extends Phaser.Scene {
     this.inVideoCall = false;
   }
   preload() {
-    this.load.image('officePlan', 'assets/backgrounds/officePlan2.png');
-    this.load.image('sprite', 'assets/spritesheets/sprite.png');
-    this.load.image('star', 'assets/spritesheets/star.png');
+    this.load.image("officePlan", "assets/backgrounds/officePlan2.png");
+    this.load.image("sprite", "assets/spritesheets/sprite.png");
+    this.load.image("star", "assets/spritesheets/star.png");
   }
 
   create() {
@@ -26,7 +26,7 @@ export default class MainScene extends Phaser.Scene {
     connect(scene);
 
     //background
-    const background = this.add.image(400, 300, 'officePlan');
+    const background = this.add.image(400, 300, "officePlan");
     background.height = game.height;
     background.width = game.width;
 
@@ -34,7 +34,7 @@ export default class MainScene extends Phaser.Scene {
     this.otherPlayers = this.physics.add.group();
 
     // Join the game room with gameRoomName 'office'
-    this.socket.emit('joinRoom', 'office');
+    this.socket.emit("joinRoom", "office");
     //background
 
     // CREATE OTHER PLAYERS GROUP
@@ -42,10 +42,10 @@ export default class MainScene extends Phaser.Scene {
 
     //set movement keys to arrow keys
     const keys = scene.input.keyboard.addKeys({
-      up: 'up',
-      down: 'down',
-      left: 'left',
-      right: 'right',
+      up: "up",
+      down: "down",
+      left: "left",
+      right: "right",
     }); // keys.up, keys.down, keys.left, keys.right
     this.cursors = keys;
 
@@ -85,7 +85,7 @@ export default class MainScene extends Phaser.Scene {
         (x !== this.sprite.oldPosition.x || y !== this.sprite.oldPosition.y)
       ) {
         this.moving = true;
-        this.socket.emit('playerMovement', {
+        this.socket.emit("playerMovement", {
           x: this.sprite.x,
           y: this.sprite.y,
           gameRoomName: scene.state.gameRoomName,
@@ -113,7 +113,7 @@ export default class MainScene extends Phaser.Scene {
   addPlayer(scene, playerInfo) {
     scene.joined = true;
     scene.sprite = scene.physics.add
-      .sprite(playerInfo.x, playerInfo.y, 'sprite')
+      .sprite(playerInfo.x, playerInfo.y, "sprite")
       .setScale(0.7)
       .setVisible(true)
       .setCollideWorldBounds(true);
@@ -122,7 +122,7 @@ export default class MainScene extends Phaser.Scene {
   }
   addOtherPlayers(scene, playerInfo) {
     const otherPlayer = scene.physics.add
-      .sprite(playerInfo.x + 40, playerInfo.y + 40, 'star')
+      .sprite(playerInfo.x + 40, playerInfo.y + 40, "star")
       .setScale(0.7)
       .setVisible(true)
       .setCollideWorldBounds(true);
@@ -184,7 +184,7 @@ export default class MainScene extends Phaser.Scene {
     scene.inVideoCall = true;
     //join a conference call with otherPlayer
     scene.socket.emit(
-      'joinCall',
+      "joinCall",
       otherPlayer.playerId,
       scene.state.gameRoomName
     );
@@ -201,13 +201,13 @@ export default class MainScene extends Phaser.Scene {
     }
     scene.rtcPeerConnections = {};
     //Stop our video
-    const video = document.getElementById('myvideo');
+    const video = document.getElementById("myvideo");
     video.srcObject = null;
     //Stop peer videos
-    const peerVideos = document.getElementById('peervideos');
-    peerVideos.innerHTML = '';
+    const peerVideos = document.getElementById("peervideos");
+    peerVideos.innerHTML = "";
     //tell the server to remove us from the leaveCall
-    scene.socket.emit('leaveCall', scene.state.gameRoomName);
+    scene.socket.emit("leaveCall", scene.state.gameRoomName);
     // Allow ourselves to join new calls
     scene.inVideoCall = false;
   }
