@@ -1,6 +1,8 @@
 import "phaser";
 import connect from "../socket";
-import uniqid from "uniqid";
+
+const buttonDiv = document.getElementById("button-div");
+const button = document.createElement("BUTTON");
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -183,6 +185,10 @@ export default class MainScene extends Phaser.Scene {
   joinVideoCall(scene, otherPlayer) {
     scene.inVideoCall = true;
     //join a conference call with otherPlayer
+    buttonDiv.append(button);
+    button.addEventListener("click", () => {
+      buttonDiv.removeChild("BUTTON");
+    });
     scene.socket.emit(
       "joinCall",
       otherPlayer.playerId,
@@ -193,6 +199,10 @@ export default class MainScene extends Phaser.Scene {
   //Leaving video call
   leaveVideoCall(scene) {
     //closing all of our RTC peer connections
+    console.log(
+      "scene.state.gameRoomName@leaveVideoCall",
+      scene.state.gameRoomName
+    );
     for (let peerId in scene.rtcPeerConnections) {
       let connection = scene.rtcPeerConnections[peerId];
       connection.close();
