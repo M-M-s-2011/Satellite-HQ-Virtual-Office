@@ -46,7 +46,6 @@ const playerMoved = (socket, gameRooms, data) => {
 //this function sends the video room name out to other players in the game room to join.
 const updateVRName = (socket, gameRooms, data) => {
   const { videoRoomName, gameRoomName } = data;
-
   //broadcast the player info with updated VR name to all players
   gameRooms[gameRoomName].players[socket.id].videoRoomName = videoRoomName;
   socket
@@ -71,7 +70,13 @@ const disconnect = (socket, gameRooms, io) => {
   const gameRoomInfo = gameRooms[gameRoomName];
 
   if (gameRoomInfo) {
-    // console.log("user disconnected: ", socket.id);
+    const player = gameRoomInfo.players[socket.id];
+    //
+
+    if (player.videoRoomName) {
+      socket.leave(player.videoRoomName);
+      socket.to(player.videoRoomName).emit("peerLeftCall", socket.id);
+    }
     // remove this player from our players object
     delete gameRoomInfo.players[socket.id];
     // update numPlayers
