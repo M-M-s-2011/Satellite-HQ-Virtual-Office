@@ -58,7 +58,6 @@ const disconnect = (socket, gameRooms, io) => {
   }
 
   const gameRoomInfo = gameRooms[gameRoomName];
-
   if (gameRoomInfo) {
     const player = gameRoomInfo.players[socket.id];
 
