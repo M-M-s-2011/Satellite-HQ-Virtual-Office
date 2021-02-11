@@ -1,7 +1,7 @@
 import "phaser";
 import connect from "../socket";
 import uniqid from "uniqid";
-import Toast from "../../public/toast/toast";
+import snackbar from "../../public/snackbar/snackbar";
 
 export default class MainScene extends Phaser.Scene {
   constructor() {

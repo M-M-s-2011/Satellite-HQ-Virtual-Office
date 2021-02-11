@@ -54,3 +54,40 @@ h4 {
   flex-direction: column;
   align-content: center;
 }
+
+#button-container {
+  display: grid;
+}
+
+
+
+#buttons {
+  display: inline-grid;
+  grid-gap: 10px;
+  height: 200px;
+  width: 70%;
+  grid-template-columns: auto auto auto;
+  justify-self: center;
+  padding: 15px 25px;
+  border-radius: 3px 3px 0 0;
+}
+
+
+#close {
+  grid-column: 1 / span 1;
+  border-radius: 50%;
+  font-size: 20px;
+
+}
+#joinVid {
+  grid-column: 2 / span 1;
+  border-radius: 50%;
+  font-size: 20px;
+
+}
+#joinChat {
+  grid-column: 3 / span 1;
+  border-radius: 50%;
+  font-size: 20px;
+
+}
