@@ -9,8 +9,6 @@ const joinCall = (socket, videoRoomName) => {
   socket.to(videoRoomName).emit("peerJoinedCall", socket.id);
 };
 
-const ready = (socket, videoRoomName) => {};
-
 // Pass an offer along from one socket to another
 const offerCreated = (socket, peerId, offer) => {
   // Route the offer to the socket with id peerId
@@ -28,7 +26,10 @@ const answerCreated = (socket, peerId, answer) => {
 };
 
 //Leave call
-const leaveCall = () => {};
+const leaveCall = (socket, videoRoomName) => {
+  socket.leave(videoRoomName);
+  socket.to(videoRoomName).emit("peerLeftCall", socket.id);
+};
 
 module.exports = (io) => {
   io.on("connection", (socket) => {
@@ -42,5 +43,6 @@ module.exports = (io) => {
     socket.on("answerCreated", (peerId, answer) =>
       answerCreated(socket, peerId, answer)
     );
+    socket.on("leaveCall", (videoRoomName) => leaveCall(socket, videoRoomName));
   });
 };
