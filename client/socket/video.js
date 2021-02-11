@@ -1,5 +1,6 @@
 import { VIDEO_SETTINGS } from "./RTC/constants";
 import { createRTCPeerConnection } from "./RTC/rtcSignalEmitters";
+import { object } from "prop-types";
 
 // Helper function for loading user video
 const loadUserStream = async (scene) => {
@@ -69,6 +70,20 @@ const answerReceived = (scene, peerId, answer) => {
   // console.log(document.getElementsByTagName("video"));
 };
 
+const peerLeftCall = (scene, peerId) => {
+  const peerVideo = document.getElementById(`video_${peerId}`);
+  peerVideo.remove();
+  let connection = scene.rtcPeerConnections[peerId];
+  connection.close();
+  connection.ontrack = null;
+  connection.onicecandidate = null;
+  delete scene.rtcPeerConnections[peerId];
+  //check if we're the only one in the video room
+  if (!Object.keys(scene.rtcPeerConnections).length) {
+    scene.leaveVideoCall(scene);
+  }
+};
+
 const connectVideo = (scene) => {
   scene.socket.on("joinedCall", () => joinedCall(scene));
   scene.socket.on("peerJoinedCall", (peerId) => peerJoinedCall(scene, peerId));
@@ -81,6 +96,9 @@ const connectVideo = (scene) => {
   scene.socket.on("answerReceived", (peerId, answer) =>
     answerReceived(scene, peerId, answer)
   );
+  scene.socket.on("peerLeftCall", (peerId) => {
+    peerLeftCall(scene, peerId);
+  });
 };
 
 export default connectVideo;

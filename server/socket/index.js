@@ -13,7 +13,7 @@ const gameRooms = {
 
 const connect = (io) => {
   connectChatRoutes(io);
-  connectVideoRoutes(io);
+  connectVideoRoutes(io, gameRooms);
   connectGameRoutes(io, gameRooms);
 };
 
