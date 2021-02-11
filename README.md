@@ -12,4 +12,3 @@ In the project directory, you can run:
 
 Launches the app on localhost:8080!
 
-###hi lb!
