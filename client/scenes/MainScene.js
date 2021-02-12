@@ -1,5 +1,6 @@
 import 'phaser';
 import connect from '../socket';
+import { VIDEO_SETTINGS } from '../socket/RTC/constants';
 
 const buttonDiv = document.getElementById('button-div');
 const leaveButton = document.getElementById('leave-button');
@@ -183,8 +184,12 @@ export default class MainScene extends Phaser.Scene {
     });
   }
   // Joining video call
-  joinVideoCall(scene, otherPlayer) {
+  async joinVideoCall(scene, otherPlayer) {
     scene.inVideoCall = true;
+    // Start our webcam and store the MediaStream
+    scene.userStream = await navigator.mediaDevices.getUserMedia(
+      VIDEO_SETTINGS
+    );
     scene.showLeaveButton();
     //join a conference call with otherPlayer
     scene.socket.emit(
@@ -207,6 +212,9 @@ export default class MainScene extends Phaser.Scene {
     //Stop our video
     const video = document.getElementById('myvideo');
     video.srcObject = null;
+    // Disable webcam and remove MediaStream
+    scene.userStream.getTracks().forEach((track) => track.stop());
+    scene.userStream = null;
     //Stop peer videos
     const peerVideos = document.getElementById('peervideos');
     peerVideos.innerHTML = '';
