@@ -8,15 +8,8 @@
 
 // When we receive a chat message, append it to chatWindow
 // message = {username, body}
-const broadcastMessage = (message, chatWindow) => {
-  chatWindow.innerHTML += `<p><strong>${message.username}:</strong> ${message.body}</p>`;
-};
 
 // register the front end event listeners for text chat
-const connectChat = (scene) => {
-  scene.socket.on("broadcastMessage", (message) =>
-    broadcastMessage(message, scene.chatWindow)
-  );
-};
+const connectChat = (scene) => {};
 
 export default connectChat;
