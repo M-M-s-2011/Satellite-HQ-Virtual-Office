@@ -210,7 +210,7 @@ export default class MainScene extends Phaser.Scene {
     //Stop peer videos
     const peerVideos = document.getElementById('peervideos');
     peerVideos.innerHTML = '';
-    //tell the server to remove us from the leaveCall
+    //tell the server to remove us from the call
     scene.socket.emit('leaveCall', scene.state.gameRoomName);
     // Allow ourselves to join new calls
     scene.inVideoCall = false;

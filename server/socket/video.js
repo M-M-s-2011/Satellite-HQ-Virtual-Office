@@ -37,8 +37,8 @@ const leaveCall = (socket, gameRoomName, gameRooms) => {
   const player = gameRooms[gameRoomName].players[socket.id];
   const videoRoomName = player.videoRoomName;
   if (videoRoomName) {
-    player.videoRoomName = null;
     socket.leave(videoRoomName);
+    player.videoRoomName = null;
     socket.to(videoRoomName).emit('peerLeftCall', socket.id);
   }
 };
