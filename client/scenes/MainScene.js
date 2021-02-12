@@ -1,9 +1,14 @@
 import "phaser";
 import connect from "../socket";
+import { VIDEO_SETTINGS } from "../socket/RTC/constants";
 
-const buttonDiv = document.getElementById("button-div");
+const joinBtnDiv = document.getElementById("join-button-div");
+const joinButton = document.getElementById("join-button");
+const leaveBtnDiv = document.getElementById("leave-button-div");
 const leaveButton = document.getElementById("leave-button");
-const input = document.getElementById("name-input");
+const usernameInput = document.getElementById("username");
+const memoInput = document.getElementById("chat");
+const submitMemoBtn = document.getElementById("submit-memo-btn");
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -19,8 +24,12 @@ export default class MainScene extends Phaser.Scene {
   preload() {
     this.load.image("officePlan", "assets/backgrounds/officePlan2.png");
     this.load.image("sprite", "assets/spritesheets/sprite.png");
+<<<<<<< HEAD
     this.load.image("star", "assets/spritesheets/star1.png");
     this.load.html("name-input", "assets/backgrounds/name-submit.html");
+=======
+    this.load.image("star", "assets/spritesheets/star.png");
+>>>>>>> 1e2eff20f5c64063529de1ce5de261f6d188ccab
   }
 
   create() {
@@ -30,6 +39,10 @@ export default class MainScene extends Phaser.Scene {
     //connect front-end socket listeners
     connect(scene);
 
+    //chat event listeners
+    submitMemoBtn.addEventListener("click", () => {
+      scene.submitMemo(scene);
+    });
     //background
     const background = this.add.image(400, 300, "officePlan");
     background.height = game.height;
@@ -137,7 +150,11 @@ export default class MainScene extends Phaser.Scene {
     scene.joined = true;
     //the line below adds the sprite to the game map.
     scene.sprite = scene.physics.add
+<<<<<<< HEAD
       .sprite(playerInfo.x, playerInfo.y, ["sprite"])
+=======
+      .sprite(playerInfo.x, playerInfo.y, "sprite")
+>>>>>>> 1e2eff20f5c64063529de1ce5de261f6d188ccab
       .setScale(0.7)
       .setVisible(true)
       .setCollideWorldBounds(true);
@@ -184,7 +201,8 @@ export default class MainScene extends Phaser.Scene {
       this.nearbyPlayers[otherPlayer.playerId] = otherPlayer;
       // If we're not already in a call, join call with otherPlayer
       if (!this.inVideoCall) {
-        this.joinVideoCall(this, otherPlayer);
+        // this.joinVideoCall(this, otherPlayer);
+        this.showJoinButton(this, otherPlayer);
       }
     }
   }
@@ -203,10 +221,20 @@ export default class MainScene extends Phaser.Scene {
         delete scene.nearbyPlayers[playerId];
       }
     });
+    //check if nearyby players using length
+    //if no neighbors, can't join a call
+    if (!Object.keys(scene.nearbyPlayers).length) {
+      scene.hideJoinButton();
+    }
   }
   // Joining video call
-  joinVideoCall(scene, otherPlayer) {
+  async joinVideoCall(scene, otherPlayer) {
     scene.inVideoCall = true;
+    // Start our webcam and store the MediaStream
+    scene.userStream = await navigator.mediaDevices.getUserMedia(
+      VIDEO_SETTINGS
+    );
+    scene.hideJoinButton();
     scene.showLeaveButton();
     //join a conference call with otherPlayer
     scene.socket.emit(
@@ -229,6 +257,9 @@ export default class MainScene extends Phaser.Scene {
     //Stop our video
     const video = document.getElementById("myvideo");
     video.srcObject = null;
+    // Disable webcam and remove MediaStream
+    scene.userStream.getTracks().forEach((track) => track.stop());
+    scene.userStream = null;
     //Stop peer videos
     const peerVideos = document.getElementById("peervideos");
     peerVideos.innerHTML = "";
@@ -238,12 +269,42 @@ export default class MainScene extends Phaser.Scene {
     scene.inVideoCall = false;
     scene.hideLeaveButton();
   }
+  showJoinButton(scene, otherPlayer) {
+    joinBtnDiv.classList.remove("inactive");
+    joinButton.disabled = false;
+    joinButton.onclick = () => {
+      scene.joinVideoCall(scene, otherPlayer);
+    };
+  }
+  hideJoinButton() {
+    joinBtnDiv.classList.add("inactive");
+    joinButton.disabled = true;
+    joinButton.onclick = undefined;
+  }
+
   showLeaveButton() {
+<<<<<<< HEAD
     buttonDiv.classList.remove("inactive");
     leaveButton.disabled = false;
   }
   hideLeaveButton() {
     buttonDiv.classList.add("inactive");
+=======
+    leaveBtnDiv.classList.remove("inactive");
+    leaveButton.disabled = false;
+  }
+  hideLeaveButton() {
+    leaveBtnDiv.classList.add("inactive");
+>>>>>>> 1e2eff20f5c64063529de1ce5de261f6d188ccab
     leaveButton.disabled = true;
+  }
+  submitMemo(scene) {
+    scene.socket.emit(
+      "submitMemo",
+      scene.state.gameRoomName,
+      usernameInput.value,
+      memoInput.value
+    );
+    memoInput.value = "";
   }
 }

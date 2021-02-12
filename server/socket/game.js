@@ -42,6 +42,13 @@ const playerMoved = (socket, gameRooms, data) => {
   socket
     .to(gameRoomName)
     .emit("playerMoved", gameRooms[gameRoomName].players[socket.id]);
+<<<<<<< HEAD
+=======
+};
+
+const submitMemo = (io, gameRoomName, username, message) => {
+  io.in(gameRoomName).emit("broadcastMessage", username, message);
+>>>>>>> 1e2eff20f5c64063529de1ce5de261f6d188ccab
 };
 
 // when a player disconnects, remove them from our players object
@@ -90,6 +97,10 @@ const connectGame = (io, gameRooms) => {
     // when a player moves, update the player data, & notify all players
     socket.on("playerMovement", (data) => playerMoved(socket, gameRooms, data));
 
+    //
+    socket.on("submitMemo", (gameRoomName, username, message) =>
+      submitMemo(io, gameRoomName, username, message)
+    );
     // when a player disconnects, remove the player data from the room and notify all players
     socket.on("disconnect", () => disconnect(socket, gameRooms, io));
   });
