@@ -6,6 +6,9 @@ const joinBtnDiv = document.getElementById("join-button-div");
 const joinButton = document.getElementById("join-button");
 const leaveBtnDiv = document.getElementById("leave-button-div");
 const leaveButton = document.getElementById("leave-button");
+const usernameInput = document.getElementById("username");
+const memoInput = document.getElementById("chat");
+const submitMemoBtn = document.getElementById("submit-memo-btn");
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -31,6 +34,10 @@ export default class MainScene extends Phaser.Scene {
     //connect front-end socket listeners
     connect(scene);
 
+    //chat event listeners
+    submitMemoBtn.addEventListener("click", () => {
+      scene.submitMemo(scene);
+    });
     //background
     const background = this.add.image(400, 300, "officePlan");
     background.height = game.height;
@@ -253,5 +260,14 @@ export default class MainScene extends Phaser.Scene {
   hideLeaveButton() {
     leaveBtnDiv.classList.add("inactive");
     leaveButton.disabled = true;
+  }
+  submitMemo(scene) {
+    scene.socket.emit(
+      "submitMemo",
+      scene.state.gameRoomName,
+      usernameInput.value,
+      memoInput.value
+    );
+    memoInput.value = "";
   }
 }
