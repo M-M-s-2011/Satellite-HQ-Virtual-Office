@@ -43,6 +43,16 @@ const playerMoved = (scene, playerInfo) => {
       const oldX = otherPlayer.x;
       const oldY = otherPlayer.y;
       otherPlayer.setPosition(playerInfo.x, playerInfo.y);
+      otherPlayer.playerName.x = playerInfo.x;
+      otherPlayer.playerName.y = playerInfo.y;
+    }
+  });
+};
+
+const playerSetName = (scene, playerInfo) => {
+  scene.otherPlayers.getChildren().forEach(function (otherPlayer) {
+    if (playerInfo.playerId === otherPlayer.playerId) {
+      otherPlayer.playerName.setText(playerInfo.playerName);
     }
   });
 };
@@ -65,6 +75,7 @@ const disconnected = (scene, arg) => {
   scene.state.numPlayers = numPlayers;
   scene.otherPlayers.getChildren().forEach((otherPlayer) => {
     if (playerId === otherPlayer.playerId) {
+      otherPlayer.playerName.destroy();
       otherPlayer.destroy();
       // If the player that disconnected was a neighbor of our sprite,
       // delete it from the nearbyPlayers object
@@ -80,6 +91,9 @@ const connectGame = (scene) => {
   scene.socket.on("newPlayer", (arg) => newPlayer(scene, arg));
   scene.socket.on("playerMoved", (playerInfo) =>
     playerMoved(scene, playerInfo)
+  );
+  scene.socket.on("playerSetName", (playerInfo) =>
+    playerSetName(scene, playerInfo)
   );
   scene.socket.on("broadcastMessage", (username, message) =>
     broadcastMessage(username, message)

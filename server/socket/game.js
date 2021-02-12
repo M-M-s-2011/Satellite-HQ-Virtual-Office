@@ -11,6 +11,7 @@ const joinRoom = (socket, gameRooms, gameRoomName) => {
     x: 400,
     y: 300,
     playerId: socket.id,
+    playerName: "",
     videoRoomName: null,
   };
   //update number of players
@@ -30,6 +31,12 @@ const joinRoom = (socket, gameRooms, gameRoomName) => {
     playerInfo: gameRoomInfo.players[socket.id],
     numPlayers: gameRoomInfo.numPlayers,
   });
+};
+
+const setName = (socket, gameRooms, gameRoomName, usersName) => {
+  const playerInfo = gameRooms[gameRoomName].players[socket.id];
+  playerInfo.playerName = usersName;
+  socket.to(gameRoomName).emit("playerSetName", playerInfo);
 };
 
 //when a player moves, update the player data
@@ -88,6 +95,10 @@ const connectGame = (io, gameRooms) => {
   io.on("connection", (socket) => {
     socket.on("joinRoom", (gameRoomName) =>
       joinRoom(socket, gameRooms, gameRoomName)
+    );
+
+    socket.on("setName", (gameRoomName, usersName) =>
+      setName(socket, gameRooms, gameRoomName, usersName)
     );
 
     // when a player moves, update the player data, & notify all players

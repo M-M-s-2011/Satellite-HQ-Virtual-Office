@@ -24,7 +24,8 @@ export default class MainScene extends Phaser.Scene {
   preload() {
     this.load.image("officePlan", "assets/backgrounds/officePlan2.png");
     this.load.image("sprite", "assets/spritesheets/sprite.png");
-    this.load.image("star", "assets/spritesheets/star.png");
+    this.load.image("star", "assets/spritesheets/star1.png");
+    this.load.html("name-input", "assets/backgrounds/name-submit.html");
   }
 
   create() {
@@ -42,6 +43,22 @@ export default class MainScene extends Phaser.Scene {
     const background = this.add.image(400, 300, "officePlan");
     background.height = game.height;
     background.width = game.width;
+
+    this.inputForm = this.add
+      .dom(400, 300)
+      .createFromCache("name-input")
+      .addListener("click");
+
+    this.inputForm.on("click", async (e) => {
+      e.preventDefault();
+      if (e.target.name === "submit") {
+        const usersName = await scene.inputForm.getChildByName("name");
+        scene.userTextName.setText(usersName.value);
+        scene.inputForm.destroy();
+        this.socket.emit("setName", this.state.gameRoomName, usersName.value);
+      }
+    });
+    scene.userTextName = this.add.text(400, 300, "");
 
     // CREATE OTHER PLAYERS GROUP
     this.otherPlayers = this.physics.add.group();
@@ -110,6 +127,10 @@ export default class MainScene extends Phaser.Scene {
         y: this.sprite.y,
         rotation: this.sprite.rotation,
       };
+
+      scene.userTextName.x = this.sprite.body.position.x;
+      scene.userTextName.y = this.sprite.body.position.y;
+
       //iterates over children and add overlap
       //look into otherPlayers.children.iterate()
       //stange bug causing the callback to happen twice at each of the overlap
@@ -125,13 +146,16 @@ export default class MainScene extends Phaser.Scene {
   //need to change sprite location to dynamic
   addPlayer(scene, playerInfo) {
     scene.joined = true;
+    //the line below adds the sprite to the game map.
     scene.sprite = scene.physics.add
       .sprite(playerInfo.x, playerInfo.y, "sprite")
       .setScale(0.7)
       .setVisible(true)
       .setCollideWorldBounds(true);
 
+    // console.log("I should have added text");
     scene.sprite.playerId = playerInfo.playerId;
+    scene.sprite.playerName = scene.userTextName;
   }
   addOtherPlayers(scene, playerInfo) {
     const otherPlayer = scene.physics.add
@@ -140,6 +164,9 @@ export default class MainScene extends Phaser.Scene {
       .setVisible(true)
       .setCollideWorldBounds(true);
     otherPlayer.playerId = playerInfo.playerId;
+    otherPlayer.playerName = this.add.text(400, 300, playerInfo.playerName);
+    otherPlayer.playerName.x = otherPlayer.body.position.x;
+    otherPlayer.playerName.y = otherPlayer.body.position.y;
     scene.otherPlayers.add(otherPlayer);
   }
   // Add overlap for a pair of players
