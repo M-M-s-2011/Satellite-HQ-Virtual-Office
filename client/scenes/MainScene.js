@@ -15,7 +15,12 @@ export default class MainScene extends Phaser.Scene {
   preload() {
     this.load.image("officePlan", "assets/backgrounds/officePlan2.png");
     this.load.image("sprite", "assets/spritesheets/sprite.png");
-    this.load.image("star", "assets/spritesheets/star.png");
+    this.load.image("star", "assets/spritesheets/star1.png");
+
+    this.load.script(
+      "webfont",
+      "//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"
+    );
   }
 
   create() {
@@ -52,6 +57,16 @@ export default class MainScene extends Phaser.Scene {
     //set physics and bounds on the game world
     this.physics.world.enable(this);
     this.physics.world.setBounds(0, 0, 800, 600);
+
+    //safeword banana
+    // let container = this.add.container(400, 300);
+    // let star = this.add.sprite(0, 0, "star");
+    // let text = this.add.text(0, 0, "Carly");
+
+    // container.add(star);
+    // container.add(text);
+    // star.setScale(4);
+    // console.log("is there a star here?");
   }
   update() {
     const scene = this;
@@ -111,12 +126,25 @@ export default class MainScene extends Phaser.Scene {
 
   //need to change sprite location to dynamic
   addPlayer(scene, playerInfo) {
+    // console.log("adding player");
+    // const container = this.add.container(0, 0);
+    const label = this.add.text(playerInfo.x, playerInfo.y, "Carly");
+
+    // const container = this.add.container(0, 0);
+    // const text = this.add.text(0, 0, "Carly");
+    // const sprite = this.add.sprite(playerInfo.x, playerInfo.y, "sprite");
+    // container.add(sprite);
+    // container.add(text);
+
     scene.joined = true;
+    //the line below adds the sprite to the game map.
     scene.sprite = scene.physics.add
       .sprite(playerInfo.x, playerInfo.y, "sprite")
       .setScale(0.7)
       .setVisible(true)
       .setCollideWorldBounds(true);
+
+    // console.log("I should have added text");
 
     scene.sprite.playerId = playerInfo.playerId;
   }
