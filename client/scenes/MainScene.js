@@ -1,6 +1,8 @@
 import "phaser";
 import connect from "../socket";
-import uniqid from "uniqid";
+
+const buttonDiv = document.getElementById("button-div");
+const leaveButton = document.getElementById("leave-button");
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -11,6 +13,7 @@ export default class MainScene extends Phaser.Scene {
     this.nearbyPlayers = {};
     this.rtcPeerConnections = {};
     this.inVideoCall = false;
+    leaveButton.addEventListener("click", () => this.leaveVideoCall(this));
   }
   preload() {
     this.load.image("officePlan", "assets/backgrounds/officePlan2.png");
@@ -127,25 +130,22 @@ export default class MainScene extends Phaser.Scene {
   //need to change sprite location to dynamic
   addPlayer(scene, playerInfo) {
     // console.log("adding player");
-    // const container = this.add.container(0, 0);
-    const label = this.add.text(playerInfo.x, playerInfo.y, "Carly");
+    const container = this.add.container(0, 0);
+    // const label = this.add.text(playerInfo.x, playerInfo.y, "Carly");
 
-    // const container = this.add.container(0, 0);
-    // const text = this.add.text(0, 0, "Carly");
-    // const sprite = this.add.sprite(playerInfo.x, playerInfo.y, "sprite");
-    // container.add(sprite);
-    // container.add(text);
+    const ourSprite = this.add.sprite(playerInfo.x, playerInfo.y, "sprite");
 
     scene.joined = true;
     //the line below adds the sprite to the game map.
     scene.sprite = scene.physics.add
+      .existing(container)
       .sprite(playerInfo.x, playerInfo.y, "sprite")
       .setScale(0.7)
       .setVisible(true)
       .setCollideWorldBounds(true);
 
     // console.log("I should have added text");
-
+    // scene.sprite.container = container;
     scene.sprite.playerId = playerInfo.playerId;
   }
   addOtherPlayers(scene, playerInfo) {
@@ -210,6 +210,7 @@ export default class MainScene extends Phaser.Scene {
   // Joining video call
   joinVideoCall(scene, otherPlayer) {
     scene.inVideoCall = true;
+    scene.showLeaveButton();
     //join a conference call with otherPlayer
     scene.socket.emit(
       "joinCall",
@@ -234,9 +235,18 @@ export default class MainScene extends Phaser.Scene {
     //Stop peer videos
     const peerVideos = document.getElementById("peervideos");
     peerVideos.innerHTML = "";
-    //tell the server to remove us from the leaveCall
+    //tell the server to remove us from the call
     scene.socket.emit("leaveCall", scene.state.gameRoomName);
     // Allow ourselves to join new calls
     scene.inVideoCall = false;
+    scene.hideLeaveButton();
+  }
+  showLeaveButton() {
+    buttonDiv.classList.remove("inactive");
+    leaveButton.disabled = false;
+  }
+  hideLeaveButton() {
+    buttonDiv.classList.add("inactive");
+    leaveButton.disabled = true;
   }
 }

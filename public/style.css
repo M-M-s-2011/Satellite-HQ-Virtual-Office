@@ -48,9 +48,12 @@ h4 {
   align-content: center;
 }
 
-
 #peerRoom {
   display: flex;
   flex-direction: column;
   align-content: center;
+}
+
+.inactive {
+  display: none;
 }
