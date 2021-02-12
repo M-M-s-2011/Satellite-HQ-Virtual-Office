@@ -1,25 +1,27 @@
-import 'phaser';
-import connect from '../socket';
-import { VIDEO_SETTINGS } from '../socket/RTC/constants';
+import "phaser";
+import connect from "../socket";
+import { VIDEO_SETTINGS } from "../socket/RTC/constants";
 
-const buttonDiv = document.getElementById('button-div');
-const leaveButton = document.getElementById('leave-button');
+const joinBtnDiv = document.getElementById("join-button-div");
+const joinButton = document.getElementById("join-button");
+const leaveBtnDiv = document.getElementById("leave-button-div");
+const leaveButton = document.getElementById("leave-button");
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
-    super('MainScene');
+    super("MainScene");
     this.state = {};
     // Store ids of players overlapping with our sprite
     // Should we move this to a property of scene.state?
     this.nearbyPlayers = {};
     this.rtcPeerConnections = {};
     this.inVideoCall = false;
-    leaveButton.addEventListener('click', () => this.leaveVideoCall(this));
+    leaveButton.addEventListener("click", () => this.leaveVideoCall(this));
   }
   preload() {
-    this.load.image('officePlan', 'assets/backgrounds/officePlan2.png');
-    this.load.image('sprite', 'assets/spritesheets/sprite.png');
-    this.load.image('star', 'assets/spritesheets/star.png');
+    this.load.image("officePlan", "assets/backgrounds/officePlan2.png");
+    this.load.image("sprite", "assets/spritesheets/sprite.png");
+    this.load.image("star", "assets/spritesheets/star.png");
   }
 
   create() {
@@ -30,7 +32,7 @@ export default class MainScene extends Phaser.Scene {
     connect(scene);
 
     //background
-    const background = this.add.image(400, 300, 'officePlan');
+    const background = this.add.image(400, 300, "officePlan");
     background.height = game.height;
     background.width = game.width;
 
@@ -38,7 +40,7 @@ export default class MainScene extends Phaser.Scene {
     this.otherPlayers = this.physics.add.group();
 
     // Join the game room with gameRoomName 'office'
-    this.socket.emit('joinRoom', 'office');
+    this.socket.emit("joinRoom", "office");
     //background
 
     // CREATE OTHER PLAYERS GROUP
@@ -46,10 +48,10 @@ export default class MainScene extends Phaser.Scene {
 
     //set movement keys to arrow keys
     const keys = scene.input.keyboard.addKeys({
-      up: 'up',
-      down: 'down',
-      left: 'left',
-      right: 'right',
+      up: "up",
+      down: "down",
+      left: "left",
+      right: "right",
     }); // keys.up, keys.down, keys.left, keys.right
     this.cursors = keys;
 
@@ -89,7 +91,7 @@ export default class MainScene extends Phaser.Scene {
         (x !== this.sprite.oldPosition.x || y !== this.sprite.oldPosition.y)
       ) {
         this.moving = true;
-        this.socket.emit('playerMovement', {
+        this.socket.emit("playerMovement", {
           x: this.sprite.x,
           y: this.sprite.y,
           gameRoomName: scene.state.gameRoomName,
@@ -117,7 +119,7 @@ export default class MainScene extends Phaser.Scene {
   addPlayer(scene, playerInfo) {
     scene.joined = true;
     scene.sprite = scene.physics.add
-      .sprite(playerInfo.x, playerInfo.y, 'sprite')
+      .sprite(playerInfo.x, playerInfo.y, "sprite")
       .setScale(0.7)
       .setVisible(true)
       .setCollideWorldBounds(true);
@@ -126,7 +128,7 @@ export default class MainScene extends Phaser.Scene {
   }
   addOtherPlayers(scene, playerInfo) {
     const otherPlayer = scene.physics.add
-      .sprite(playerInfo.x + 40, playerInfo.y + 40, 'star')
+      .sprite(playerInfo.x + 40, playerInfo.y + 40, "star")
       .setScale(0.7)
       .setVisible(true)
       .setCollideWorldBounds(true);
@@ -163,7 +165,8 @@ export default class MainScene extends Phaser.Scene {
       this.nearbyPlayers[otherPlayer.playerId] = otherPlayer;
       // If we're not already in a call, join call with otherPlayer
       if (!this.inVideoCall) {
-        this.joinVideoCall(this, otherPlayer);
+        // this.joinVideoCall(this, otherPlayer);
+        this.showJoinButton(this, otherPlayer);
       }
     }
   }
@@ -182,6 +185,11 @@ export default class MainScene extends Phaser.Scene {
         delete scene.nearbyPlayers[playerId];
       }
     });
+    //check if nearyby players using length
+    //if no neighbors, can't join a call
+    if (!Object.keys(scene.nearbyPlayers).length) {
+      scene.hideJoinButton();
+    }
   }
   // Joining video call
   async joinVideoCall(scene, otherPlayer) {
@@ -190,10 +198,11 @@ export default class MainScene extends Phaser.Scene {
     scene.userStream = await navigator.mediaDevices.getUserMedia(
       VIDEO_SETTINGS
     );
+    scene.hideJoinButton();
     scene.showLeaveButton();
     //join a conference call with otherPlayer
     scene.socket.emit(
-      'joinCall',
+      "joinCall",
       otherPlayer.playerId,
       scene.state.gameRoomName
     );
@@ -210,26 +219,39 @@ export default class MainScene extends Phaser.Scene {
     }
     scene.rtcPeerConnections = {};
     //Stop our video
-    const video = document.getElementById('myvideo');
+    const video = document.getElementById("myvideo");
     video.srcObject = null;
     // Disable webcam and remove MediaStream
     scene.userStream.getTracks().forEach((track) => track.stop());
     scene.userStream = null;
     //Stop peer videos
-    const peerVideos = document.getElementById('peervideos');
-    peerVideos.innerHTML = '';
+    const peerVideos = document.getElementById("peervideos");
+    peerVideos.innerHTML = "";
     //tell the server to remove us from the call
-    scene.socket.emit('leaveCall', scene.state.gameRoomName);
+    scene.socket.emit("leaveCall", scene.state.gameRoomName);
     // Allow ourselves to join new calls
     scene.inVideoCall = false;
     scene.hideLeaveButton();
   }
+  showJoinButton(scene, otherPlayer) {
+    joinBtnDiv.classList.remove("inactive");
+    joinButton.disabled = false;
+    joinButton.onclick = () => {
+      scene.joinVideoCall(scene, otherPlayer);
+    };
+  }
+  hideJoinButton() {
+    joinBtnDiv.classList.add("inactive");
+    joinButton.disabled = true;
+    joinButton.onclick = undefined;
+  }
+
   showLeaveButton() {
-    buttonDiv.classList.remove('inactive');
+    leaveBtnDiv.classList.remove("inactive");
     leaveButton.disabled = false;
   }
   hideLeaveButton() {
-    buttonDiv.classList.add('inactive');
+    leaveBtnDiv.classList.add("inactive");
     leaveButton.disabled = true;
   }
 }
