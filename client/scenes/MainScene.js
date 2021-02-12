@@ -24,12 +24,8 @@ export default class MainScene extends Phaser.Scene {
   preload() {
     this.load.image("officePlan", "assets/backgrounds/officePlan2.png");
     this.load.image("sprite", "assets/spritesheets/sprite.png");
-<<<<<<< HEAD
     this.load.image("star", "assets/spritesheets/star1.png");
     this.load.html("name-input", "assets/backgrounds/name-submit.html");
-=======
-    this.load.image("star", "assets/spritesheets/star.png");
->>>>>>> 1e2eff20f5c64063529de1ce5de261f6d188ccab
   }
 
   create() {
@@ -54,10 +50,12 @@ export default class MainScene extends Phaser.Scene {
       .addListener("click");
 
     this.inputForm.on("click", async (e) => {
+      e.preventDefault();
       if (e.target.name === "submit") {
         const usersName = await scene.inputForm.getChildByName("name");
         scene.userTextName.setText(usersName.value);
         scene.inputForm.destroy();
+        this.socket.emit("setName", this.state.gameRoomName, usersName.value);
       }
     });
     scene.userTextName = this.add.text(400, 300, "");
@@ -150,17 +148,14 @@ export default class MainScene extends Phaser.Scene {
     scene.joined = true;
     //the line below adds the sprite to the game map.
     scene.sprite = scene.physics.add
-<<<<<<< HEAD
-      .sprite(playerInfo.x, playerInfo.y, ["sprite"])
-=======
       .sprite(playerInfo.x, playerInfo.y, "sprite")
->>>>>>> 1e2eff20f5c64063529de1ce5de261f6d188ccab
       .setScale(0.7)
       .setVisible(true)
       .setCollideWorldBounds(true);
 
     // console.log("I should have added text");
     scene.sprite.playerId = playerInfo.playerId;
+    scene.sprite.playerName = scene.userTextName;
   }
   addOtherPlayers(scene, playerInfo) {
     const otherPlayer = scene.physics.add
@@ -169,6 +164,9 @@ export default class MainScene extends Phaser.Scene {
       .setVisible(true)
       .setCollideWorldBounds(true);
     otherPlayer.playerId = playerInfo.playerId;
+    otherPlayer.playerName = this.add.text(400, 300, playerInfo.playerName);
+    otherPlayer.playerName.x = otherPlayer.body.position.x;
+    otherPlayer.playerName.y = otherPlayer.body.position.y;
     scene.otherPlayers.add(otherPlayer);
   }
   // Add overlap for a pair of players
@@ -283,19 +281,11 @@ export default class MainScene extends Phaser.Scene {
   }
 
   showLeaveButton() {
-<<<<<<< HEAD
-    buttonDiv.classList.remove("inactive");
-    leaveButton.disabled = false;
-  }
-  hideLeaveButton() {
-    buttonDiv.classList.add("inactive");
-=======
     leaveBtnDiv.classList.remove("inactive");
     leaveButton.disabled = false;
   }
   hideLeaveButton() {
     leaveBtnDiv.classList.add("inactive");
->>>>>>> 1e2eff20f5c64063529de1ce5de261f6d188ccab
     leaveButton.disabled = true;
   }
   submitMemo(scene) {

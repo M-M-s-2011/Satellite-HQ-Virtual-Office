@@ -33,6 +33,12 @@ const joinRoom = (socket, gameRooms, gameRoomName) => {
   });
 };
 
+const setName = (socket, gameRooms, gameRoomName, usersName) => {
+  const playerInfo = gameRooms[gameRoomName].players[socket.id];
+  playerInfo.playerName = usersName;
+  socket.to(gameRoomName).emit("playerSetName", playerInfo);
+};
+
 //when a player moves, update the player data
 const playerMoved = (socket, gameRooms, data) => {
   const { x, y, gameRoomName } = data;
@@ -42,13 +48,10 @@ const playerMoved = (socket, gameRooms, data) => {
   socket
     .to(gameRoomName)
     .emit("playerMoved", gameRooms[gameRoomName].players[socket.id]);
-<<<<<<< HEAD
-=======
 };
 
 const submitMemo = (io, gameRoomName, username, message) => {
   io.in(gameRoomName).emit("broadcastMessage", username, message);
->>>>>>> 1e2eff20f5c64063529de1ce5de261f6d188ccab
 };
 
 // when a player disconnects, remove them from our players object
@@ -92,6 +95,10 @@ const connectGame = (io, gameRooms) => {
   io.on("connection", (socket) => {
     socket.on("joinRoom", (gameRoomName) =>
       joinRoom(socket, gameRooms, gameRoomName)
+    );
+
+    socket.on("setName", (gameRoomName, usersName) =>
+      setName(socket, gameRooms, gameRoomName, usersName)
     );
 
     // when a player moves, update the player data, & notify all players
