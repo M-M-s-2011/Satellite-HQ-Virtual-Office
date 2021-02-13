@@ -1,6 +1,11 @@
 //Backend socket routes for game
 //Connects backend event listeners to sockets
 //emits from backend
+let count = 0;
+const getNextAvatar = (gameRoomInfo) => {
+  const avatars = Object.keys(gameRoomInfo.avatars);
+  return avatars[count++ % avatars.length];
+};
 
 //back end event listeners for game
 const joinRoom = (socket, gameRooms, gameRoomName) => {
@@ -11,23 +16,24 @@ const joinRoom = (socket, gameRooms, gameRoomName) => {
     x: 400,
     y: 300,
     playerId: socket.id,
-    playerName: "",
+    playerName: '',
     videoRoomName: null,
+    avatar: getNextAvatar(gameRoomInfo),
   };
   //update number of players
   gameRoomInfo.numPlayers = Object.keys(gameRoomInfo.players).length;
 
   // set initial state
-  socket.emit("setState", gameRoomInfo);
+  socket.emit('setState', gameRoomInfo);
 
   //send the players object to the new player
-  socket.emit("currentPlayers", {
+  socket.emit('currentPlayers', {
     players: gameRoomInfo.players,
     numPlayers: gameRoomInfo.numPlayers,
   });
 
   // update all other players of the new player
-  socket.to(gameRoomName).emit("newPlayer", {
+  socket.to(gameRoomName).emit('newPlayer', {
     playerInfo: gameRoomInfo.players[socket.id],
     numPlayers: gameRoomInfo.numPlayers,
   });
@@ -36,7 +42,7 @@ const joinRoom = (socket, gameRooms, gameRoomName) => {
 const setName = (socket, gameRooms, gameRoomName, usersName) => {
   const playerInfo = gameRooms[gameRoomName].players[socket.id];
   playerInfo.playerName = usersName;
-  socket.to(gameRoomName).emit("playerSetName", playerInfo);
+  socket.to(gameRoomName).emit('playerSetName', playerInfo);
 };
 
 //when a player moves, update the player data
@@ -47,17 +53,17 @@ const playerMoved = (socket, gameRooms, data) => {
   // emit a message to all players about the player that moved
   socket
     .to(gameRoomName)
-    .emit("playerMoved", gameRooms[gameRoomName].players[socket.id]);
+    .emit('playerMoved', gameRooms[gameRoomName].players[socket.id]);
 };
 
 const submitMemo = (io, gameRoomName, username, message) => {
-  io.in(gameRoomName).emit("broadcastMessage", username, message);
+  io.in(gameRoomName).emit('broadcastMessage', username, message);
 };
 
 // when a player disconnects, remove them from our players object
 const disconnect = (socket, gameRooms, io) => {
   //find which room they belong to
-  let gameRoomName = "";
+  let gameRoomName = '';
   for (let keys1 in gameRooms) {
     for (let keys2 in gameRooms[keys1]) {
       Object.keys(gameRooms[keys1][keys2]).map((el) => {
@@ -76,14 +82,14 @@ const disconnect = (socket, gameRooms, io) => {
     if (player.videoRoomName) {
       const videoRoomName = player.videoRoomName;
       socket.leave(videoRoomName);
-      socket.to(videoRoomName).emit("peerLeftCall", socket.id);
+      socket.to(videoRoomName).emit('peerLeftCall', socket.id);
     }
     // remove this player from our players object
     delete gameRoomInfo.players[socket.id];
     // update numPlayers
     gameRoomInfo.numPlayers = Object.keys(gameRoomInfo.players).length;
     // emit a message to all players to remove this player
-    io.to(gameRoomName).emit("disconnected", {
+    io.to(gameRoomName).emit('disconnected', {
       playerId: socket.id,
       numPlayers: gameRoomInfo.numPlayers,
     });
@@ -92,24 +98,24 @@ const disconnect = (socket, gameRooms, io) => {
 
 //connect event listeners
 const connectGame = (io, gameRooms) => {
-  io.on("connection", (socket) => {
-    socket.on("joinRoom", (gameRoomName) =>
+  io.on('connection', (socket) => {
+    socket.on('joinRoom', (gameRoomName) =>
       joinRoom(socket, gameRooms, gameRoomName)
     );
 
-    socket.on("setName", (gameRoomName, usersName) =>
+    socket.on('setName', (gameRoomName, usersName) =>
       setName(socket, gameRooms, gameRoomName, usersName)
     );
 
     // when a player moves, update the player data, & notify all players
-    socket.on("playerMovement", (data) => playerMoved(socket, gameRooms, data));
+    socket.on('playerMovement', (data) => playerMoved(socket, gameRooms, data));
 
     //
-    socket.on("submitMemo", (gameRoomName, username, message) =>
+    socket.on('submitMemo', (gameRoomName, username, message) =>
       submitMemo(io, gameRoomName, username, message)
     );
     // when a player disconnects, remove the player data from the room and notify all players
-    socket.on("disconnect", () => disconnect(socket, gameRooms, io));
+    socket.on('disconnect', () => disconnect(socket, gameRooms, io));
   });
 };
 
