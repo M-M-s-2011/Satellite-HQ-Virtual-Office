@@ -1,12 +1,19 @@
 //Place to call all the socket functions
-const connectVideoRoutes = require("./video");
-const connectGameRoutes = require("./game");
+const connectVideoRoutes = require('./video');
+const connectGameRoutes = require('./game');
 
 const gameRooms = {
   office: {
-    gameRoomName: "office",
+    gameRoomName: 'office',
     players: {},
     numPlayers: 0,
+    avatars: {
+      carly: 'assets/spritesheets/carly.png',
+      gracie: 'assets/spritesheets/gracie.png',
+      lb: 'assets/spritesheets/lb.png',
+      navya: 'assets/spritesheets/navya.png',
+      star: 'assets/spritesheets/carly.png',
+    },
   },
 };
 

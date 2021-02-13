@@ -1,31 +1,42 @@
-import "phaser";
-import connect from "../socket";
-import { VIDEO_SETTINGS } from "../socket/RTC/constants";
+import 'phaser';
+import connect from '../socket';
+import { VIDEO_SETTINGS } from '../socket/RTC/constants';
 
-const joinBtnDiv = document.getElementById("join-button-div");
-const joinButton = document.getElementById("join-button");
-const leaveBtnDiv = document.getElementById("leave-button-div");
-const leaveButton = document.getElementById("leave-button");
-const usernameInput = document.getElementById("username");
-const memoInput = document.getElementById("chat");
-const submitMemoBtn = document.getElementById("submit-memo-btn");
+const AVATARS = {
+  carly: 'assets/spritesheets/carly.png',
+  gracie: 'assets/spritesheets/gracie.png',
+  lb: 'assets/spritesheets/lb.png',
+  navya: 'assets/spritesheets/navya.png',
+  star: 'assets/spritesheets/carly.png',
+};
+
+const joinBtnDiv = document.getElementById('join-button-div');
+const joinButton = document.getElementById('join-button');
+const leaveBtnDiv = document.getElementById('leave-button-div');
+const leaveButton = document.getElementById('leave-button');
+const usernameInput = document.getElementById('username');
+const memoInput = document.getElementById('chat');
+const submitMemoBtn = document.getElementById('submit-memo-btn');
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
-    super("MainScene");
+    super('MainScene');
     this.state = {};
     // Store ids of players overlapping with our sprite
     // Should we move this to a property of scene.state?
     this.nearbyPlayers = {};
     this.rtcPeerConnections = {};
     this.inVideoCall = false;
-    leaveButton.addEventListener("click", () => this.leaveVideoCall(this));
+    leaveButton.addEventListener('click', () => this.leaveVideoCall(this));
   }
   preload() {
-    this.load.image("officePlan", "assets/backgrounds/officePlan2.png");
-    this.load.image("sprite", "assets/spritesheets/sprite.png");
-    this.load.image("star", "assets/spritesheets/star1.png");
-    this.load.html("name-input", "assets/backgrounds/name-submit.html");
+    this.load.image('officePlan', 'assets/backgrounds/officePlan2.png');
+    // this.load.image("sprite", "assets/spritesheets/carly.png");
+    // this.load.image("star", "assets/spritesheets/star.png");
+    Object.keys(AVATARS).forEach((avatarKey) =>
+      this.load.image(avatarKey, AVATARS[avatarKey])
+    );
+    this.load.html('name-input', 'assets/backgrounds/name-submit.html');
   }
 
   create() {
@@ -36,35 +47,35 @@ export default class MainScene extends Phaser.Scene {
     connect(scene);
 
     //chat event listeners
-    submitMemoBtn.addEventListener("click", () => {
+    submitMemoBtn.addEventListener('click', () => {
       scene.submitMemo(scene);
     });
     //background
-    const background = this.add.image(400, 300, "officePlan");
+    const background = this.add.image(400, 300, 'officePlan');
     background.height = game.height;
     background.width = game.width;
 
     this.inputForm = this.add
       .dom(400, 300)
-      .createFromCache("name-input")
-      .addListener("click");
+      .createFromCache('name-input')
+      .addListener('click');
 
-    this.inputForm.on("click", async (e) => {
+    this.inputForm.on('click', async (e) => {
       e.preventDefault();
-      if (e.target.name === "submit") {
-        const usersName = await scene.inputForm.getChildByName("name");
+      if (e.target.name === 'submit') {
+        const usersName = await scene.inputForm.getChildByName('name');
         scene.userTextName.setText(usersName.value);
         scene.inputForm.destroy();
-        this.socket.emit("setName", this.state.gameRoomName, usersName.value);
+        this.socket.emit('setName', this.state.gameRoomName, usersName.value);
       }
     });
-    scene.userTextName = this.add.text(400, 300, "");
+    scene.userTextName = this.add.text(400, 300, '');
 
     // CREATE OTHER PLAYERS GROUP
     this.otherPlayers = this.physics.add.group();
 
     // Join the game room with gameRoomName 'office'
-    this.socket.emit("joinRoom", "office");
+    this.socket.emit('joinRoom', 'office');
     //background
 
     // CREATE OTHER PLAYERS GROUP
@@ -72,10 +83,10 @@ export default class MainScene extends Phaser.Scene {
 
     //set movement keys to arrow keys
     const keys = scene.input.keyboard.addKeys({
-      up: "up",
-      down: "down",
-      left: "left",
-      right: "right",
+      up: 'up',
+      down: 'down',
+      left: 'left',
+      right: 'right',
     }); // keys.up, keys.down, keys.left, keys.right
     this.cursors = keys;
 
@@ -115,7 +126,7 @@ export default class MainScene extends Phaser.Scene {
         (x !== this.sprite.oldPosition.x || y !== this.sprite.oldPosition.y)
       ) {
         this.moving = true;
-        this.socket.emit("playerMovement", {
+        this.socket.emit('playerMovement', {
           x: this.sprite.x,
           y: this.sprite.y,
           gameRoomName: scene.state.gameRoomName,
@@ -145,10 +156,11 @@ export default class MainScene extends Phaser.Scene {
 
   //need to change sprite location to dynamic
   addPlayer(scene, playerInfo) {
+    console.log(playerInfo);
     scene.joined = true;
     //the line below adds the sprite to the game map.
     scene.sprite = scene.physics.add
-      .sprite(playerInfo.x, playerInfo.y, "sprite")
+      .sprite(playerInfo.x, playerInfo.y, playerInfo.avatar)
       .setScale(0.7)
       .setVisible(true)
       .setCollideWorldBounds(true);
@@ -159,7 +171,7 @@ export default class MainScene extends Phaser.Scene {
   }
   addOtherPlayers(scene, playerInfo) {
     const otherPlayer = scene.physics.add
-      .sprite(playerInfo.x + 40, playerInfo.y + 40, "star")
+      .sprite(playerInfo.x + 40, playerInfo.y + 40, playerInfo.avatar)
       .setScale(0.7)
       .setVisible(true)
       .setCollideWorldBounds(true);
@@ -236,7 +248,7 @@ export default class MainScene extends Phaser.Scene {
     scene.showLeaveButton();
     //join a conference call with otherPlayer
     scene.socket.emit(
-      "joinCall",
+      'joinCall',
       otherPlayer.playerId,
       scene.state.gameRoomName
     );
@@ -253,48 +265,48 @@ export default class MainScene extends Phaser.Scene {
     }
     scene.rtcPeerConnections = {};
     //Stop our video
-    const video = document.getElementById("myvideo");
+    const video = document.getElementById('myvideo');
     video.srcObject = null;
     // Disable webcam and remove MediaStream
     scene.userStream.getTracks().forEach((track) => track.stop());
     scene.userStream = null;
     //Stop peer videos
-    const peerVideos = document.getElementById("peervideos");
-    peerVideos.innerHTML = "";
+    const peerVideos = document.getElementById('peervideos');
+    peerVideos.innerHTML = '';
     //tell the server to remove us from the call
-    scene.socket.emit("leaveCall", scene.state.gameRoomName);
+    scene.socket.emit('leaveCall', scene.state.gameRoomName);
     // Allow ourselves to join new calls
     scene.inVideoCall = false;
     scene.hideLeaveButton();
   }
   showJoinButton(scene, otherPlayer) {
-    joinBtnDiv.classList.remove("inactive");
+    joinBtnDiv.classList.remove('inactive');
     joinButton.disabled = false;
     joinButton.onclick = () => {
       scene.joinVideoCall(scene, otherPlayer);
     };
   }
   hideJoinButton() {
-    joinBtnDiv.classList.add("inactive");
+    joinBtnDiv.classList.add('inactive');
     joinButton.disabled = true;
     joinButton.onclick = undefined;
   }
 
   showLeaveButton() {
-    leaveBtnDiv.classList.remove("inactive");
+    leaveBtnDiv.classList.remove('inactive');
     leaveButton.disabled = false;
   }
   hideLeaveButton() {
-    leaveBtnDiv.classList.add("inactive");
+    leaveBtnDiv.classList.add('inactive');
     leaveButton.disabled = true;
   }
   submitMemo(scene) {
     scene.socket.emit(
-      "submitMemo",
+      'submitMemo',
       scene.state.gameRoomName,
       usernameInput.value,
       memoInput.value
     );
-    memoInput.value = "";
+    memoInput.value = '';
   }
 }
