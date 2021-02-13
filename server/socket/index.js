@@ -12,7 +12,6 @@ const gameRooms = {
       gracie: 'assets/spritesheets/gracie.png',
       lb: 'assets/spritesheets/lb.png',
       navya: 'assets/spritesheets/navya.png',
-      star: 'assets/spritesheets/carly.png',
     },
   },
 };

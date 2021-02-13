@@ -7,7 +7,6 @@ const AVATARS = {
   gracie: 'assets/spritesheets/gracie.png',
   lb: 'assets/spritesheets/lb.png',
   navya: 'assets/spritesheets/navya.png',
-  star: 'assets/spritesheets/carly.png',
 };
 
 const joinBtnDiv = document.getElementById('join-button-div');
