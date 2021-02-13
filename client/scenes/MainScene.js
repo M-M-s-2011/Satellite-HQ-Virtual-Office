@@ -13,7 +13,6 @@ const joinBtnDiv = document.getElementById('join-button-div');
 const joinButton = document.getElementById('join-button');
 const leaveBtnDiv = document.getElementById('leave-button-div');
 const leaveButton = document.getElementById('leave-button');
-const usernameInput = document.getElementById('username');
 const memoInput = document.getElementById('chat');
 const submitMemoBtn = document.getElementById('submit-memo-btn');
 
@@ -30,8 +29,6 @@ export default class MainScene extends Phaser.Scene {
   }
   preload() {
     this.load.image('officePlan', 'assets/backgrounds/officePlan2.png');
-    // this.load.image("sprite", "assets/spritesheets/carly.png");
-    // this.load.image("star", "assets/spritesheets/star.png");
     Object.keys(AVATARS).forEach((avatarKey) =>
       this.load.image(avatarKey, AVATARS[avatarKey])
     );
@@ -303,7 +300,7 @@ export default class MainScene extends Phaser.Scene {
     scene.socket.emit(
       'submitMemo',
       scene.state.gameRoomName,
-      usernameInput.value,
+      scene.userTextName.text || 'Anonymous',
       memoInput.value
     );
     memoInput.value = '';
