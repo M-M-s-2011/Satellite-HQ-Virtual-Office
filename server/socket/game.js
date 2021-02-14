@@ -1,6 +1,11 @@
 //Backend socket routes for game
 //Connects backend event listeners to sockets
 //emits from backend
+let count = 0;
+const getNextAvatar = (gameRoomInfo) => {
+  const avatars = Object.keys(gameRoomInfo.avatars);
+  return avatars[count++ % avatars.length];
+};
 
 //back end event listeners for game
 const joinRoom = (socket, gameRooms, gameRoomName) => {
@@ -11,7 +16,9 @@ const joinRoom = (socket, gameRooms, gameRoomName) => {
     x: 400,
     y: 300,
     playerId: socket.id,
+    playerName: '',
     videoRoomName: null,
+    avatar: getNextAvatar(gameRoomInfo),
   };
   //update number of players
   gameRoomInfo.numPlayers = Object.keys(gameRoomInfo.players).length;
@@ -32,6 +39,12 @@ const joinRoom = (socket, gameRooms, gameRoomName) => {
   });
 };
 
+const setName = (socket, gameRooms, gameRoomName, usersName) => {
+  const playerInfo = gameRooms[gameRoomName].players[socket.id];
+  playerInfo.playerName = usersName;
+  socket.to(gameRoomName).emit('playerSetName', playerInfo);
+};
+
 //when a player moves, update the player data
 const playerMoved = (socket, gameRooms, data) => {
   const { x, y, gameRoomName } = data;
@@ -41,6 +54,10 @@ const playerMoved = (socket, gameRooms, data) => {
   socket
     .to(gameRoomName)
     .emit('playerMoved', gameRooms[gameRoomName].players[socket.id]);
+};
+
+const submitMemo = (io, gameRoomName, username, message) => {
+  io.in(gameRoomName).emit('broadcastMessage', username, message);
 };
 
 // when a player disconnects, remove them from our players object
@@ -86,9 +103,17 @@ const connectGame = (io, gameRooms) => {
       joinRoom(socket, gameRooms, gameRoomName)
     );
 
+    socket.on('setName', (gameRoomName, usersName) =>
+      setName(socket, gameRooms, gameRoomName, usersName)
+    );
+
     // when a player moves, update the player data, & notify all players
     socket.on('playerMovement', (data) => playerMoved(socket, gameRooms, data));
 
+    //
+    socket.on('submitMemo', (gameRoomName, username, message) =>
+      submitMemo(io, gameRoomName, username, message)
+    );
     // when a player disconnects, remove the player data from the room and notify all players
     socket.on('disconnect', () => disconnect(socket, gameRooms, io));
   });

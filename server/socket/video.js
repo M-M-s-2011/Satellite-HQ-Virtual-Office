@@ -34,11 +34,11 @@ const answerCreated = (socket, peerId, answer) => {
 
 //Leave call
 const leaveCall = (socket, gameRoomName, gameRooms) => {
-  const player = gameRooms[gameRoomName].players[socket];
-  if (player) {
-    const videoRoomName = player.videoRoomName;
-    player.videoRoomName = null;
+  const player = gameRooms[gameRoomName].players[socket.id];
+  const videoRoomName = player.videoRoomName;
+  if (videoRoomName) {
     socket.leave(videoRoomName);
+    player.videoRoomName = null;
     socket.to(videoRoomName).emit('peerLeftCall', socket.id);
   }
 };
