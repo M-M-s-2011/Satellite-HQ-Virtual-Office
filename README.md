@@ -12,7 +12,10 @@ In the project directory, you can run:
 
 Launches the app on localhost:8080!
 
-[Carly DiPasquale](https://github.com/orgs/M-M-s-2011/people/CarlyDiPasquale)
-[Gracie Ingermanson](https://github.com/orgs/M-M-s-2011/people/GracieIngermanson)
-[LB Bradburn](https://github.com/orgs/M-M-s-2011/people/LB-BB)
-[Navya Ramagiri](https://github.com/orgs/M-M-s-2011/people/navya825)
+[Carly DiPasquale](https://github.com/CarlyDiPasquale)
+
+[Gracie Ingermanson](https://github.com/GracieIngermanson)
+
+[LB Bradburn](https://github.com/LB-BB)
+
+[Navya Ramagiri](https://github.com/navya825)
