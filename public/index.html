@@ -7,6 +7,15 @@
   </head>
 
   <body>
+    <!-- the below script disables the enter key. -->
+    <script type='text/javascript'>
+      document.onkeydown = function (e) {
+        var key = e.charCode || e.keyCode;
+        if (key == 13) { 
+          e.preventDefault();
+        }         
+      }
+      </script>
     <div><img src="/assets/backgrounds/satellite-hq.png" alt="Banner" /></div>
     <div id="parent">
       <div id="videocontainer">
