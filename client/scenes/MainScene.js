@@ -297,12 +297,15 @@ export default class MainScene extends Phaser.Scene {
     leaveButton.disabled = true;
   }
   submitMemo(scene) {
-    scene.socket.emit(
-      'submitMemo',
-      scene.state.gameRoomName,
-      scene.userTextName.text || 'Anonymous',
-      memoInput.value
-    );
-    memoInput.value = '';
+    // If the message is non-empty, send it, else do nothing
+    if (memoInput.value) {
+      scene.socket.emit(
+        'submitMemo',
+        scene.state.gameRoomName,
+        scene.userTextName.text || 'Anonymous',
+        memoInput.value
+      );
+      memoInput.value = '';
+    }
   }
 }
