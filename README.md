@@ -1,4 +1,4 @@
-# Satellite HQ: Virtual Office
+# 🚀Satellite HQ: Virtual Office🚀
 
 Satellite HQ is virtual office simulator powered by Phaser and WebRTC.
 
